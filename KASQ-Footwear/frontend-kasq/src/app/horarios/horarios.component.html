@@ -1,0 +1,728 @@
+<div class="layout">
+
+  <!-- MENÚ LATERAL -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h1>KASQ</h1>
+      <span>FOOTWEAR</span>
+    </div>
+
+    <nav class="menu-lateral">
+
+            <a
+        routerLink="/dashboard"
+        routerLinkActive="active">
+
+        🏠 Inicio
+
+      </a>
+
+      <a
+        routerLink="/empleados"
+        routerLinkActive="active">
+
+        👥 Empleados
+
+      </a>
+
+      <a
+        routerLink="/horarios"
+        routerLinkActive="active">
+
+        🕒 Horarios
+
+      </a>
+
+      <a
+        routerLink="/registrar-hora-extra"
+        routerLinkActive="active">
+
+        ⏱ Horas Extras
+
+      </a>
+
+      <a
+        routerLink="/nomina"
+        routerLinkActive="active">
+
+        💳 Nómina
+
+      </a>
+
+      <a
+        routerLink="/pagos"
+        routerLinkActive="active">
+
+        💵 Pagos
+
+      </a>
+
+      <a
+        routerLink="/registrar-empleado"
+        routerLinkActive="active">
+
+        👤 Registrar Empleado
+
+      </a>
+
+    </nav>
+
+    <div
+      class="logout"
+      routerLink="/login"
+      role="button"
+      tabindex="0">
+
+      ↪ Cerrar sesión
+
+    </div>
+
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="main">
+
+    <!-- BARRA SUPERIOR SIN BUSCADOR -->
+    <header class="topbar">
+
+      <button
+        type="button"
+        class="menu-button">
+        ☰
+      </button>
+
+      <div class="topbar-right">
+
+        <div class="notification">
+          🔔
+          <span>3</span>
+        </div>
+
+        <div class="profile">
+
+          <div class="avatar">
+            👤
+          </div>
+
+          <div class="profile-info">
+            <strong>RH Admin</strong>
+            <small>Administrador</small>
+          </div>
+
+          <span>⌄</span>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <section class="content">
+
+      <!-- TÍTULO -->
+      <div class="title-row">
+
+        <div>
+          <h2>Horarios</h2>
+
+          <p>
+            Consulta y administra los horarios y turnos del personal.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- TARJETAS -->
+      <div class="summary-grid">
+
+        <div class="summary-card">
+
+          <div class="summary-icon purple">
+            🗓
+          </div>
+
+          <div>
+            <span>Turnos activos</span>
+            <strong>{{ totalTurnos() }}</strong>
+            <small>Turnos configurados</small>
+          </div>
+
+        </div>
+
+        <div class="summary-card">
+
+          <div class="summary-icon green">
+            👥
+          </div>
+
+          <div>
+            <span>Empleados asignados</span>
+            <strong>{{ totalEmpleados() }}</strong>
+            <small>En turnos asignados</small>
+          </div>
+
+        </div>
+
+        <div class="summary-card">
+
+          <div class="summary-icon blue">
+            ◷
+          </div>
+
+          <div>
+            <span>Horas totales / día</span>
+            <strong>{{ totalHoras() }} h</strong>
+            <small>Horas programadas</small>
+          </div>
+
+        </div>
+
+        <div class="summary-card">
+
+          <div class="summary-icon yellow">
+            ▦
+          </div>
+
+          <div>
+            <span>Próxima semana</span>
+            <strong>19 - 25 Mayo 2025</strong>
+            <small>Ver programación</small>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- FILTROS -->
+      <div class="filters-card">
+
+        <div class="filter-field search-field">
+
+          <label>Buscar empleado</label>
+
+          <div class="input-wrapper">
+
+            <span>🔍</span>
+
+            <input
+              type="text"
+              [(ngModel)]="busqueda"
+              (input)="filtrarHorarios()"
+              placeholder="Nombre o número de empleado">
+
+          </div>
+
+        </div>
+
+        <div class="filter-field">
+
+          <label>Departamento</label>
+
+          <select
+            [(ngModel)]="departamentoSeleccionado"
+            (change)="filtrarHorarios()">
+
+            <option value="">Todos</option>
+            <option value="Producción">
+              Producción
+            </option>
+            <option value="Calidad">
+              Calidad
+            </option>
+            <option value="Almacén">
+              Almacén
+            </option>
+            <option value="Recursos Humanos">
+              Recursos Humanos
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="filter-field">
+
+          <label>Turno</label>
+
+          <select
+            [(ngModel)]="turnoSeleccionado"
+            (change)="filtrarHorarios()">
+
+            <option value="">Todos</option>
+            <option value="1er Turno">
+              1er Turno
+            </option>
+            <option value="2do Turno">
+              2do Turno
+            </option>
+            <option value="3er Turno">
+              3er Turno
+            </option>
+            <option value="V-Extra">
+              V-Extra
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="filter-field">
+
+          <label>Fecha</label>
+
+          <input
+            type="date"
+            [(ngModel)]="fechaSeleccionada">
+
+        </div>
+
+        <button
+          type="button"
+          class="clear-button"
+          (click)="limpiarFiltros()">
+          Limpiar
+        </button>
+
+      </div>
+
+      <!-- TABLA -->
+      <div class="table-card">
+
+        <div class="table-header">
+
+          <div>
+            <h3>Programación de Horarios</h3>
+
+            <p>
+              Listado de horarios y turnos asignados al personal.
+            </p>
+          </div>
+
+          <div class="header-actions">
+
+            <button
+              type="button"
+              class="assign-button"
+              (click)="abrirFormularioNuevo()">
+              ＋ Asignar horario
+            </button>
+
+            <button
+              type="button"
+              class="refresh-button"
+              (click)="actualizarHorarios()">
+              ↻ Actualizar
+            </button>
+
+          </div>
+
+        </div>
+
+        <div class="table-responsive">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Empleado</th>
+                <th>Número</th>
+                <th>Departamento</th>
+                <th>Puesto</th>
+                <th>Turno</th>
+                <th>Horario</th>
+                <th>Horas / Día</th>
+                <th>Días</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let horario of horariosFiltrados;
+                  let i = index
+                ">
+
+                <td>
+
+                  <div class="employee-cell">
+
+                    <div class="employee-photo">
+
+                      <img
+                        *ngIf="horario.foto"
+                        [src]="horario.foto"
+                        alt="Empleado">
+
+                      <span *ngIf="!horario.foto">
+                        👤
+                      </span>
+
+                    </div>
+
+                    <strong>
+                      {{ horario.nombre }}
+                    </strong>
+
+                  </div>
+
+                </td>
+
+                <td>
+                  {{ horario.numeroEmpleado }}
+                </td>
+
+                <td>
+                  {{ horario.departamento }}
+                </td>
+
+                <td>
+                  {{ horario.puesto }}
+                </td>
+
+                <td>
+
+                  <span
+                    class="turno"
+                    [class.segundo]="
+                      horario.turno === '2do Turno'
+                    "
+                    [class.extra]="
+                      horario.turno === 'V-Extra'
+                    ">
+
+                    {{ horario.turno }}
+
+                  </span>
+
+                </td>
+
+                <td>
+                  {{ horario.horario }}
+                </td>
+
+                <td>
+                  {{ horario.horasDia }} h
+                </td>
+
+                <td>
+
+                  <div class="days">
+
+                    <span
+                      *ngFor="let dia of horario.dias">
+                      {{ dia }}
+                    </span>
+
+                  </div>
+
+                </td>
+
+                <td>
+
+                  <span class="status">
+                    {{ horario.estado }}
+                  </span>
+
+                </td>
+
+                <td>
+
+                  <div class="actions">
+
+                    <button
+                      type="button"
+                      class="edit-button"
+                      (click)="editarHorario(horario, i)">
+                      ✎
+                    </button>
+
+                    <button
+                      type="button"
+                      class="delete-button"
+                      (click)="eliminarHorario(horario)">
+                      🗑
+                    </button>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+              <tr
+                *ngIf="
+                  horariosFiltrados.length === 0
+                ">
+
+                <td
+                  colspan="10"
+                  class="empty-message">
+                  No se encontraron horarios.
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <div class="table-footer">
+
+          Mostrando
+          {{ horariosFiltrados.length }}
+          de
+          {{ horarios.length }}
+          horarios
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<!-- FORMULARIO EN LA MISMA PÁGINA -->
+<div
+  class="modal-overlay"
+  *ngIf="mostrarFormulario"
+  (click)="cerrarDesdeFondo($event)">
+
+  <div class="modal">
+
+    <div class="modal-header">
+
+      <div>
+
+        <h2>
+          {{
+            modoEdicion
+              ? 'Editar horario'
+              : 'Asignar horario'
+          }}
+        </h2>
+
+        <p>
+          Ingresa la información del horario.
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        class="close-button"
+        (click)="cerrarFormulario()">
+        ×
+      </button>
+
+    </div>
+
+    <div class="modal-body">
+
+      <div class="modal-grid">
+
+        <div class="modal-field">
+
+          <label>Empleado *</label>
+
+          <input
+            type="text"
+            [(ngModel)]="horarioFormulario.nombre">
+
+        </div>
+
+        <div class="modal-field">
+
+          <label>Número de empleado *</label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              horarioFormulario.numeroEmpleado
+            ">
+
+        </div>
+
+        <div class="modal-field">
+
+          <label>Departamento *</label>
+
+          <select
+            [(ngModel)]="
+              horarioFormulario.departamento
+            ">
+
+            <option value="">Selecciona</option>
+            <option value="Producción">
+              Producción
+            </option>
+            <option value="Calidad">
+              Calidad
+            </option>
+            <option value="Almacén">
+              Almacén
+            </option>
+            <option value="Recursos Humanos">
+              Recursos Humanos
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="modal-field">
+
+          <label>Puesto *</label>
+
+          <input
+            type="text"
+            [(ngModel)]="
+              horarioFormulario.puesto
+            ">
+
+        </div>
+
+        <div class="modal-field">
+
+          <label>Turno *</label>
+
+          <select
+            [(ngModel)]="
+              horarioFormulario.turno
+            ">
+
+            <option value="">Selecciona</option>
+            <option value="1er Turno">
+              1er Turno
+            </option>
+            <option value="2do Turno">
+              2do Turno
+            </option>
+            <option value="3er Turno">
+              3er Turno
+            </option>
+            <option value="V-Extra">
+              V-Extra
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="modal-field">
+
+          <label>Estado</label>
+
+          <select
+            [(ngModel)]="
+              horarioFormulario.estado
+            ">
+
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">
+              Inactivo
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="modal-field">
+
+          <label>Hora de entrada</label>
+
+          <input
+            type="time"
+            [(ngModel)]="
+              horarioFormulario.horaEntrada
+            ">
+
+        </div>
+
+        <div class="modal-field">
+
+          <label>Hora de salida</label>
+
+          <input
+            type="time"
+            [(ngModel)]="
+              horarioFormulario.horaSalida
+            ">
+
+        </div>
+
+        <div class="modal-field">
+
+          <label>Horas por día</label>
+
+          <input
+            type="number"
+            min="1"
+            max="24"
+            [(ngModel)]="
+              horarioFormulario.horasDia
+            ">
+
+        </div>
+
+      </div>
+
+      <div class="days-selector">
+
+        <label>Días laborales</label>
+
+        <div>
+
+          <button
+            type="button"
+            *ngFor="
+              let dia of ['L', 'M', 'X', 'J', 'V', 'S', 'D']
+            "
+            [class.selected]="diaSeleccionado(dia)"
+            (click)="cambiarDia(dia)">
+            {{ dia }}
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button
+        type="button"
+        class="cancel-button"
+        (click)="cerrarFormulario()">
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="save-button"
+        (click)="guardarHorario()">
+
+        {{
+          modoEdicion
+            ? 'Guardar cambios'
+            : 'Asignar horario'
+        }}
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

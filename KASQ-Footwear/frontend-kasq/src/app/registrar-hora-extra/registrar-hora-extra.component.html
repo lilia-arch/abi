@@ -1,0 +1,214 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo">
+      <h1>KASQ</h1>
+      <span>FOOTWEAR</span>
+    </div>
+
+    <nav>
+            <a
+        routerLink="/dashboard"
+        routerLinkActive="active">
+
+        🏠 Inicio
+
+      </a>
+
+      <a
+        routerLink="/empleados"
+        routerLinkActive="active">
+
+        👥 Empleados
+
+      </a>
+
+      <a
+        routerLink="/horarios"
+        routerLinkActive="active">
+
+        🕒 Horarios
+
+      </a>
+
+      <a
+        routerLink="/registrar-hora-extra"
+        routerLinkActive="active">
+
+        ⏱ Horas Extras
+
+      </a>
+
+      <a
+        routerLink="/nomina"
+        routerLinkActive="active">
+
+        💳 Nómina
+
+      </a>
+
+      <a
+        routerLink="/pagos"
+        routerLinkActive="active">
+
+        💵 Pagos
+
+      </a>
+
+      <a
+        routerLink="/registrar-empleado"
+        routerLinkActive="active">
+
+        👤 Registrar Empleado
+
+      </a>
+
+    </nav>
+
+    <div
+      class="logout"
+      routerLink="/login"
+      role="button"
+      tabindex="0">
+
+      ↪ Cerrar sesión
+
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      
+
+      <div class="user">
+        <div class="bell">🔔<span></span></div>
+        <div class="profile">
+          <div class="avatar">👤</div>
+          <div>
+            <strong>RH Admin</strong>
+            <p>Administrador</p>
+          </div>
+          <span>⌄</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="content">
+      <h2>Registrar Hora Extra</h2>
+      <p class="breadcrumb"><span>Inicio</span> / Horas Extras / Registrar Hora Extra</p>
+
+      <div class="container">
+        <div class="form-card">
+          <h3>Información de la Hora Extra</h3>
+
+          <div class="grid3">
+            <div class="campo">
+              <label>Empleado <b>*</b></label>
+              <select
+                [(ngModel)]="horaExtra.numeroEmpleado"
+                name="numeroEmpleado"
+                (change)="seleccionarEmpleado()">
+
+                <option value="">Seleccione un empleado</option>
+
+                <option
+                  *ngFor="let empleado of empleados"
+                  [value]="empleado.NumeroEmpleado">
+                  {{ empleado.NumeroEmpleado }} - {{ empleado.Nombre }} {{ empleado.ApellidoPaterno }}
+                </option>
+              </select>
+            </div>
+
+            <div class="campo">
+              <label>Nombre del Empleado</label>
+              <input
+                type="text"
+                [(ngModel)]="horaExtra.nombreEmpleado"
+                name="nombreEmpleado"
+                readonly>
+            </div>
+
+            <div class="campo">
+              <label>Departamento <b>*</b></label>
+              <input
+                type="text"
+                [(ngModel)]="horaExtra.departamento"
+                name="departamento"
+                readonly>
+            </div>
+          </div>
+
+          <div class="grid3">
+            <div class="campo">
+              <label>Fecha <b>*</b></label>
+              <input type="date" [(ngModel)]="horaExtra.fecha" name="fecha">
+            </div>
+
+            <div class="campo">
+              <label>Tipo de Hora Extra <b>*</b></label>
+              <select [(ngModel)]="horaExtra.tipoHoraExtra" name="tipoHoraExtra">
+                <option value="">Selecciona tipo</option>
+                <option value="Requerido PL">Requerido PL</option>
+                <option value="V-Extra">V-Extra</option>
+              </select>
+            </div>
+
+            <div class="campo">
+              <label>Turno <b>*</b></label>
+              <select [(ngModel)]="horaExtra.turno" name="turno">
+                <option value="">Seleccione turno</option>
+                <option value="1er Turno">1er Turno</option>
+                <option value="2do Turno">2do Turno</option>
+                <option value="3er Turno">3er Turno</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="totales">
+            <div class="total-box">
+              <div class="icon">◷</div>
+              <div>
+                <label>Horas de Trabajo</label>
+                <input type="number" [(ngModel)]="horaExtra.horasTrabajo" name="horasTrabajo">
+                <small>Valor por defecto</small>
+              </div>
+            </div>
+
+            <div class="total-box">
+              <div class="icon">$</div>
+              <div>
+                <label>Pago por Hora</label>
+                <input type="text" [value]="'$' + horaExtra.pagoHora + '.00'" readonly>
+                <small>Valor automático</small>
+              </div>
+            </div>
+
+            <div class="total-box">
+              <div class="icon">▣</div>
+              <div>
+                <label>Total a Pagar</label>
+                <input type="text" [value]="'$' + calcularTotal() + '.00'" readonly>
+                <small>Se calcula automáticamente</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button class="cancel" type="button">✕ Cancelar</button>
+            <button class="save" type="button" (click)="guardarHoraExtra()">▣ Guardar Hora Extra</button>
+          </div>
+        </div>
+
+        <aside class="info-card">
+          <h4>ⓘ Información</h4>
+          <p>Los campos marcados con <b>*</b> son obligatorios.</p>
+          <ul>
+            <li><b>Empleado:</b> selecciónalo desde la lista.</li>
+            <li><b>Departamento:</b> se llena automáticamente.</li>
+            <li><b>Pago por Hora:</b> se asigna automáticamente.</li>
+            <li><b>Total a Pagar:</b> se calcula automáticamente.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+  </main>
+</div>

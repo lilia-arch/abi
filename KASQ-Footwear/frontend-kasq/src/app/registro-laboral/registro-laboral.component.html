@@ -1,0 +1,614 @@
+<div class="layout">
+
+  <!-- MENÚ LATERAL -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h1>KASQ</h1>
+      <span>FOOTWEAR</span>
+    </div>
+
+    <nav>
+
+      <a
+        routerLink="/dashboard"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        🏠 Inicio
+      </a>
+
+      <a
+        routerLink="/empleados"
+        routerLinkActive="active">
+        👥 Empleados
+      </a>
+
+      <a>
+        🕒 Horarios
+      </a>
+
+      <a
+        routerLink="/registrar-hora-extra"
+        routerLinkActive="active">
+        ⏱ Horas Extras
+      </a>
+
+      <a
+        routerLink="/nomina"
+        routerLinkActive="active">
+        💳 Nómina
+      </a>
+
+      <a>
+        💵 Pagos
+      </a>
+
+      <a
+        class="active"
+        routerLink="/registro-laboral-bancario">
+        👤 Registrar Empleado
+      </a>
+
+      <a>
+        📄 Reportes
+      </a>
+
+      <a>
+        ⚙ Configuración
+      </a>
+
+    </nav>
+
+    <div
+      class="logout"
+      (click)="cerrarSesion()">
+      ↪ Cerrar sesión
+    </div>
+
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main">
+
+    <!-- ENCABEZADO -->
+    <header class="topbar">
+
+      <div class="menu">
+        ☰
+      </div>
+
+      <div class="search">
+        🔍
+
+        <input
+          type="text"
+          placeholder="Buscar empleado...">
+      </div>
+
+      <div class="user">
+
+        <div class="bell">
+          🔔
+          <span>3</span>
+        </div>
+
+        <div class="profile">
+
+          <div class="avatar">
+            👤
+          </div>
+
+          <div>
+            <strong>RH Admin</strong>
+            <p>Administrador</p>
+          </div>
+
+          <span>⌄</span>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <!-- CONTENIDO -->
+    <section class="content">
+
+      <div class="title-row">
+
+        <div>
+          <h2>Registrar Empleado</h2>
+
+          <p>
+            <span>Empleados</span>
+            › Datos Laborales
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="back-btn"
+          routerLink="/empleados">
+          ← Volver a Empleados
+        </button>
+
+      </div>
+
+      <!-- MENSAJE DE ERROR -->
+      <div
+        class="message error"
+        *ngIf="mensajeError">
+        ⚠ {{ mensajeError }}
+      </div>
+
+      <!-- MENSAJE DE ÉXITO -->
+      <div
+        class="message success"
+        *ngIf="mensajeExito">
+        ✓ {{ mensajeExito }}
+      </div>
+
+      <div class="container">
+
+        <!-- FORMULARIO -->
+        <form
+          class="form-card"
+          (ngSubmit)="guardarDatosLaborales()">
+
+          <div class="form-title">
+
+            <div class="title-icon">
+              💼
+            </div>
+
+            <div>
+              <h3>Datos Laborales</h3>
+
+              <p>
+                Ingresa la información laboral del empleado.
+              </p>
+            </div>
+
+          </div>
+
+          <div class="form-grid">
+
+            <!-- DEPARTAMENTO -->
+            <div class="campo">
+
+              <label for="departamento">
+                Departamento
+                <b>*</b>
+              </label>
+
+              <select
+                id="departamento"
+                name="departamento"
+                [(ngModel)]="datosLaborales.idDepartamento"
+                required>
+
+                <option value="">
+                  Selecciona departamento
+                </option>
+
+                <option
+                  *ngFor="let departamento of departamentos"
+                  [value]="departamento.id">
+                  {{ departamento.nombre }}
+                </option>
+
+              </select>
+
+            </div>
+
+            <!-- PUESTO -->
+            <div class="campo">
+
+              <label for="puesto">
+                Puesto
+                <b>*</b>
+              </label>
+
+              <select
+                id="puesto"
+                name="puesto"
+                [(ngModel)]="datosLaborales.puesto"
+                required>
+
+                <option value="">
+                  Selecciona puesto
+                </option>
+
+                <option
+                  *ngFor="let puesto of puestos"
+                  [value]="puesto">
+                  {{ puesto }}
+                </option>
+
+              </select>
+
+            </div>
+
+            <!-- NÚMERO DE EMPLEADO -->
+            <div class="campo">
+
+              <label for="numeroEmpleado">
+                Número de empleado
+                <b>*</b>
+              </label>
+
+              <input
+                id="numeroEmpleado"
+                name="numeroEmpleado"
+                type="text"
+                placeholder="Ej. EMP-0001"
+                [(ngModel)]="datosLaborales.numeroEmpleado"
+                required>
+
+            </div>
+
+            <!-- FECHA DE INGRESO -->
+            <div class="campo">
+
+              <label for="fechaIngreso">
+                Fecha de ingreso
+                <b>*</b>
+              </label>
+
+              <input
+                id="fechaIngreso"
+                name="fechaIngreso"
+                type="date"
+                [(ngModel)]="datosLaborales.fechaIngreso"
+                required>
+
+            </div>
+
+            <!-- TIPO DE CONTRATO -->
+            <div class="campo">
+
+              <label for="tipoContrato">
+                Tipo de contrato
+                <b>*</b>
+              </label>
+
+              <select
+                id="tipoContrato"
+                name="tipoContrato"
+                [(ngModel)]="datosLaborales.tipoContrato"
+                required>
+
+                <option value="">
+                  Selecciona tipo de contrato
+                </option>
+
+                <option
+                  *ngFor="let contrato of tiposContrato"
+                  [value]="contrato">
+                  {{ contrato }}
+                </option>
+
+              </select>
+
+            </div>
+
+            <!-- SALARIO -->
+            <div class="campo">
+
+              <label for="salario">
+                Sueldo semanal
+                <b>*</b>
+              </label>
+
+              <div class="money-input">
+
+                <span>MX$</span>
+
+                <input
+                  id="salario"
+                  name="salario"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  [(ngModel)]="datosLaborales.salario"
+                  required>
+
+              </div>
+
+            </div>
+
+            <!-- TURNO -->
+            <div class="campo">
+
+              <label for="turno">
+                Turno asignado
+                <b>*</b>
+              </label>
+
+              <select
+                id="turno"
+                name="turno"
+                [(ngModel)]="datosLaborales.turno"
+                required>
+
+                <option value="">
+                  Selecciona turno
+                </option>
+
+                <option
+                  *ngFor="let turno of turnos"
+                  [value]="turno">
+                  {{ turno }}
+                </option>
+
+              </select>
+
+            </div>
+
+            <!-- HORAS LABORALES -->
+            <div class="campo">
+
+              <label for="horasLaboralesDia">
+                Jornada laboral
+                <b>*</b>
+              </label>
+
+              <select
+                id="horasLaboralesDia"
+                name="horasLaboralesDia"
+                [(ngModel)]="datosLaborales.horasLaboralesDia"
+                required>
+
+                <option [ngValue]="8">
+                  8 horas
+                </option>
+
+                <option [ngValue]="9">
+                  9 horas
+                </option>
+
+                <option [ngValue]="10">
+                  10 horas
+                </option>
+
+                <option [ngValue]="12">
+                  12 horas
+                </option>
+
+              </select>
+
+            </div>
+
+            <!-- SUPERVISOR -->
+            <div class="campo">
+
+              <label for="supervisor">
+                Supervisor o jefe inmediato
+              </label>
+
+              <input
+                id="supervisor"
+                name="supervisor"
+                type="text"
+                placeholder="Nombre del supervisor"
+                [(ngModel)]="datosLaborales.supervisor">
+
+            </div>
+
+            <!-- CENTRO DE TRABAJO -->
+            <div class="campo">
+
+              <label for="centroTrabajo">
+                Centro de trabajo
+                <b>*</b>
+              </label>
+
+              <select
+                id="centroTrabajo"
+                name="centroTrabajo"
+                [(ngModel)]="datosLaborales.centroTrabajo"
+                required>
+
+                <option value="KASQ Footwear">
+                  KASQ Footwear
+                </option>
+
+                <option value="Planta de Producción">
+                  Planta de Producción
+                </option>
+
+                <option value="Oficinas Administrativas">
+                  Oficinas Administrativas
+                </option>
+
+                <option value="Almacén">
+                  Almacén
+                </option>
+
+              </select>
+
+            </div>
+
+            <!-- ESTADO -->
+            <div class="campo">
+
+              <label for="estado">
+                Estado
+                <b>*</b>
+              </label>
+
+              <select
+                id="estado"
+                name="estado"
+                [(ngModel)]="datosLaborales.estado"
+                required>
+
+                <option
+                  *ngFor="let estado of estados"
+                  [value]="estado">
+                  {{ estado }}
+                </option>
+
+              </select>
+
+            </div>
+
+            <!-- ESTADO VISUAL -->
+            <div class="campo status-field">
+
+              <label>
+                Estado actual
+              </label>
+
+              <div
+                class="status"
+                [class.inactive]="
+                  datosLaborales.estado === 'Inactivo'
+                ">
+                {{ datosLaborales.estado }}
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- OBSERVACIONES -->
+          <div class="campo observations">
+
+            <label for="observaciones">
+              Observaciones
+            </label>
+
+            <textarea
+              id="observaciones"
+              name="observaciones"
+              placeholder="Escribe observaciones adicionales..."
+              [(ngModel)]="datosLaborales.observaciones">
+            </textarea>
+
+          </div>
+
+          <!-- BOTONES -->
+          <div class="buttons">
+
+            <button
+              type="button"
+              class="clear"
+              (click)="limpiarFormulario()">
+              Limpiar
+            </button>
+
+            <div class="right-buttons">
+
+              <button
+                type="button"
+                class="cancel"
+                (click)="cancelar()">
+                Cancelar
+              </button>
+
+              <button
+                type="submit"
+                class="save">
+                💾 Guardar Datos Laborales
+              </button>
+
+            </div>
+
+          </div>
+
+        </form>
+
+        <!-- INFORMACIÓN LATERAL -->
+        <aside class="information-column">
+
+          <div class="info-card important">
+
+            <h4>
+              ⓘ Información importante
+            </h4>
+
+            <ul>
+              <li>
+                Los campos marcados con
+                <strong>*</strong>
+                son obligatorios.
+              </li>
+
+              <li>
+                Verifica que la información laboral sea
+                correcta antes de guardar.
+              </li>
+
+              <li>
+                El número de empleado debe ser único.
+              </li>
+
+              <li>
+                Esta información será utilizada para
+                horarios, nómina y reportes.
+              </li>
+            </ul>
+
+          </div>
+
+          <div class="info-card shifts">
+
+            <h4>
+              Turnos disponibles
+            </h4>
+
+            <p>
+              <strong>1er Turno:</strong>
+              7:00 AM - 3:00 PM
+            </p>
+
+            <small>
+              Extra opcional: 3:00 PM - 11:00 PM
+            </small>
+
+            <p>
+              <strong>2do Turno:</strong>
+              3:00 PM - 11:00 PM
+            </p>
+
+            <small>
+              Extra opcional: 11:00 PM - 7:00 AM
+            </small>
+
+            <p>
+              <strong>3er Turno:</strong>
+              11:00 PM - 7:00 AM
+            </p>
+
+            <small>
+              Extra opcional: 7:00 AM - 3:00 PM
+            </small>
+
+          </div>
+
+          <div class="info-card contracts">
+
+            <h4>
+              Tipos de contrato
+            </h4>
+
+            <ul>
+              <li>Tiempo completo</li>
+              <li>Medio tiempo</li>
+              <li>Por obra o proyecto</li>
+              <li>Eventual</li>
+            </ul>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>

@@ -1,0 +1,624 @@
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h1>KASQ</h1>
+      <span>FOOTWEAR</span>
+    </div>
+
+    <nav>
+
+      <a
+        routerLink="/dashboard"
+        routerLinkActive="active">
+
+        🏠 Inicio
+
+      </a>
+
+      <a
+        routerLink="/empleados"
+        routerLinkActive="active">
+
+        👥 Empleados
+
+      </a>
+
+      <a
+        routerLink="/horarios"
+        routerLinkActive="active">
+
+        🕒 Horarios
+
+      </a>
+
+      <a
+        routerLink="/registrar-hora-extra"
+        routerLinkActive="active">
+
+        ⏱ Horas Extras
+
+      </a>
+
+      <a
+        routerLink="/nomina"
+        routerLinkActive="active">
+
+        💳 Nómina
+
+      </a>
+
+      <a
+        routerLink="/pagos"
+        routerLinkActive="active">
+
+        💵 Pagos
+
+      </a>
+
+      <a
+        routerLink="/registrar-empleado"
+        routerLinkActive="active">
+
+        👤 Registrar Empleado
+
+      </a>
+
+    </nav>
+
+    <div
+      class="logout"
+      routerLink="/login"
+      role="button"
+      tabindex="0">
+
+      ↪ Cerrar sesión
+
+    </div>
+
+  </aside>
+
+  <!-- PRINCIPAL -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+
+      
+
+      <div class="user-area">
+
+        <div class="bell">
+
+          🔔
+
+          <span></span>
+
+        </div>
+
+        <div class="profile">
+
+          <div class="avatar">
+            👤
+          </div>
+
+          <div>
+
+            <strong>
+              RH Admin
+            </strong>
+
+            <p>
+              Administrador
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <!-- CONTENIDO -->
+    <section class="content">
+
+      <div class="page-title">
+
+        <div>
+
+          <h2>
+            Pagos
+          </h2>
+
+          <p>
+            Consulta y registro de pagos de los empleados
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-primary"
+          [disabled]="
+            pagandoTodos ||
+            cargando ||
+            totalPendientes() === 0
+          "
+          (click)="pagarTodos()">
+
+          {{
+            pagandoTodos
+              ? 'Procesando pagos...'
+              : '💵 Pagar todos'
+          }}
+
+        </button>
+
+      </div>
+
+      <!-- FILTROS -->
+      <div class="filters">
+
+        <div>
+
+          <label>
+            Buscar empleado
+          </label>
+
+          <input
+            type="text"
+            placeholder="Nombre o número..."
+            [(ngModel)]="buscarEmpleado"
+            (input)="filtrarPagos()">
+
+        </div>
+
+        <div>
+
+          <label>
+            Departamento
+          </label>
+
+          <select
+            [(ngModel)]="
+              departamentoSeleccionado
+            "
+            (change)="filtrarPagos()">
+
+            <option value="">
+              Todos
+            </option>
+
+            <option value="Producción">
+              Producción
+            </option>
+
+            <option value="Calidad">
+              Calidad
+            </option>
+
+            <option value="Almacén">
+              Almacén
+            </option>
+
+            <option value="Mantenimiento">
+              Mantenimiento
+            </option>
+
+            <option value="Recursos Humanos">
+              Recursos Humanos
+            </option>
+
+          </select>
+
+        </div>
+
+        <div>
+
+          <label>
+            Estado
+          </label>
+
+          <select
+            [(ngModel)]="
+              estadoSeleccionado
+            "
+            (change)="filtrarPagos()">
+
+            <option value="">
+              Todos
+            </option>
+
+            <option value="Pendiente">
+              Pendiente
+            </option>
+
+            <option value="Pagado">
+              Pagado
+            </option>
+
+          </select>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-filter"
+          (click)="filtrarPagos()">
+
+          🔍 Filtrar
+
+        </button>
+
+        <button
+          type="button"
+          class="btn-clear"
+          (click)="limpiarFiltros()">
+
+          Limpiar
+
+        </button>
+
+      </div>
+
+      <!-- TARJETAS -->
+      <div class="cards">
+
+        <div class="card">
+
+          <div class="icon brown">
+            💼
+          </div>
+
+          <div>
+
+            <p>
+              Total de pagos
+            </p>
+
+            <h3>
+              {{ totalPagos() }}
+            </h3>
+
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="icon green">
+            ✅
+          </div>
+
+          <div>
+
+            <p>
+              Pagados
+            </p>
+
+            <h3>
+              {{ totalPagados() }}
+            </h3>
+
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="icon orange">
+            ⏳
+          </div>
+
+          <div>
+
+            <p>
+              Pendientes
+            </p>
+
+            <h3>
+              {{ totalPendientes() }}
+            </h3>
+
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="icon blue">
+            💲
+          </div>
+
+          <div>
+
+            <p>
+              Total a pagar
+            </p>
+
+            <h3>
+
+              {{
+                montoTotal()
+                  | currency:'MXN':'symbol':'1.2-2'
+              }}
+
+            </h3>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- CARGANDO -->
+      <div
+        class="loading"
+        *ngIf="cargando">
+
+        Cargando empleados, horas extras y pagos...
+
+      </div>
+
+      <!-- TABLA -->
+      <div
+        class="table-card"
+        *ngIf="!cargando">
+
+        <div class="table-responsive">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Empleado
+                </th>
+
+                <th>
+                  Banco
+                </th>
+
+                <th>
+                  Tarjeta
+                </th>
+
+                <th>
+                  Sueldo base
+                </th>
+
+                <th>
+                  Horas extras
+                </th>
+
+                <th>
+                  Deducciones
+                </th>
+
+                <th>
+                  Neto a pagar
+                </th>
+
+                <th>
+                  Fecha
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th>
+                  Acción
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let pago of pagosFiltrados
+                ">
+
+                <!-- EMPLEADO -->
+                <td>
+
+                  <div class="empleado">
+
+                    <img
+                      [src]="
+                        fotoEmpleado(
+                          pago.foto
+                        )
+                      "
+                      width="45"
+                      height="45"
+                      alt="Foto del empleado">
+
+                    <div>
+
+                      <strong>
+                        {{ pago.nombre }}
+                      </strong>
+
+                      <small>
+                        {{
+                          pago.numeroEmpleado ||
+                          'Sin número'
+                        }}
+                      </small>
+
+                    </div>
+
+                  </div>
+
+                </td>
+
+                <!-- BANCO -->
+                <td>
+
+                  {{ pago.banco }}
+
+                </td>
+
+                <!-- TARJETA -->
+                <td>
+
+                  {{
+                    obtenerUltimosDigitos(
+                      pago.numeroTarjeta
+                    )
+                  }}
+
+                </td>
+
+                <!-- SUELDO -->
+                <td>
+
+                  {{
+                    pago.sueldoBase
+                      | currency:'MXN':'symbol':'1.2-2'
+                  }}
+
+                </td>
+
+                <!-- HORAS EXTRAS -->
+                <td>
+
+                  <strong
+                    [class.extra-activa]="
+                      pago.pagoHorasExtras > 0
+                    ">
+
+                    {{
+                      pago.pagoHorasExtras
+                        | currency:'MXN':'symbol':'1.2-2'
+                    }}
+
+                  </strong>
+
+                  <small class="detalle-horas">
+
+                    {{ pago.totalHoras }}
+                    hora(s)
+
+                  </small>
+
+                </td>
+
+                <!-- DEDUCCIONES -->
+                <td>
+
+                  {{
+                    pago.deducciones
+                      | currency:'MXN':'symbol':'1.2-2'
+                  }}
+
+                </td>
+
+                <!-- NETO -->
+                <td>
+
+                  <strong class="neto">
+
+                    {{
+                      pago.netoPagar
+                        | currency:'MXN':'symbol':'1.2-2'
+                    }}
+
+                  </strong>
+
+                </td>
+
+                <!-- FECHA -->
+                <td>
+
+                  {{
+                    pago.estado === 'Pagado'
+                      ? formatearFecha(
+                          pago.fechaPago
+                        )
+                      : 'Pendiente'
+                  }}
+
+                </td>
+
+                <!-- ESTADO -->
+                <td>
+
+                  <span
+                    class="badge"
+                    [class.pagado]="
+                      pago.estado === 'Pagado'
+                    "
+                    [class.pendiente]="
+                      pago.estado !== 'Pagado'
+                    ">
+
+                    {{ pago.estado }}
+
+                  </span>
+
+                </td>
+
+                <!-- ACCIÓN -->
+                <td>
+
+                  <button
+                    type="button"
+                    class="btn-pay"
+                    [disabled]="
+                      pago.pagando ||
+                      pago.estado === 'Pagado'
+                    "
+                    (click)="pagarEmpleado(pago)">
+
+                    {{
+                      pago.pagando
+                        ? 'Procesando...'
+                        : pago.estado === 'Pagado'
+                          ? '✓ Pagado'
+                          : '💵 Pagar'
+                    }}
+
+                  </button>
+
+                </td>
+
+              </tr>
+
+              <tr
+                *ngIf="
+                  pagosFiltrados.length === 0
+                ">
+
+                <td
+                  colspan="10"
+                  class="empty-message">
+
+                  No hay pagos para mostrar.
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>

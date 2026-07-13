@@ -1,0 +1,101 @@
+<div class="login-container">
+
+    <!-- Contenido -->
+    <main class="content">
+
+        <!-- Encabezado -->
+        <div class="banner">
+            <h1>KASQ Footwear</h1>
+        </div>
+
+        <!-- Login -->
+        <div class="login-card">
+
+            <form (ngSubmit)="onLogin()">
+
+                <!-- Usuario -->
+                <mat-form-field appearance="outline" class="full-width">
+
+                    <mat-icon matPrefix>person</mat-icon>
+
+                    <mat-label>Usuario</mat-label>
+
+                    <input
+                        matInput
+                        [(ngModel)]="username"
+                        name="username"
+                        autocomplete="username"
+                        required>
+
+                </mat-form-field>
+
+                <!-- Contraseña -->
+                <mat-form-field appearance="outline" class="full-width">
+
+                    <mat-icon matPrefix>lock</mat-icon>
+
+                    <mat-label>Contraseña</mat-label>
+
+                    <input
+                        matInput
+                        [type]="hide ? 'password' : 'text'"
+                        [(ngModel)]="password"
+                        name="password"
+                        autocomplete="current-password"
+                        required>
+
+                    <button
+                        mat-icon-button
+                        matSuffix
+                        type="button"
+                        (click)="hide = !hide">
+
+                        <mat-icon>
+                            {{ hide ? 'visibility_off' : 'visibility' }}
+                        </mat-icon>
+
+                    </button>
+
+                </mat-form-field>
+
+                <!-- Opciones -->
+                <div class="options">
+
+                    <mat-checkbox>
+                        Recordarme
+                    </mat-checkbox>
+
+                    <a href="#">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+
+                </div>
+
+                <!-- Mensaje -->
+                <div
+                    class="mensaje"
+                    *ngIf="mensaje">
+
+                    {{ mensaje }}
+
+                </div>
+
+                <!-- Botón -->
+                <button
+                    mat-raised-button
+                    color="primary"
+                    class="login-button"
+                    type="submit"
+                    [disabled]="cargando">
+
+                    {{ cargando ? 'Ingresando...' : 'LOGIN' }}
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</div>

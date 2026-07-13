@@ -1,0 +1,30 @@
+<div class="login-page">
+  <div class="header-banner">
+    <h1>KASQ Footwear</h1>
+  </div>
+
+  <div class="login-card">
+    <form (ngSubmit)="onLogin()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Username</mat-label>
+        <input matInput [(ngModel)]="username" name="username" placeholder="Usuario" required>
+        <mat-icon matPrefix>person</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" [(ngModel)]="password" name="password" placeholder="********" required>
+        <mat-icon matPrefix>lock</mat-icon>
+      </mat-form-field>
+
+      <div class="options">
+        <label><input type="checkbox"> Remember me</label>
+        <a href="#">Forgot Password?</a>
+      </div>
+
+      <button mat-raised-button color="primary" type="submit" class="login-button">
+        LOGIN
+      </button>
+    </form>
+  </div>
+</div>

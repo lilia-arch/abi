@@ -1,0 +1,276 @@
+* {
+  box-sizing: border-box;
+}
+
+.cookies-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.52);
+  backdrop-filter: blur(4px);
+}
+
+.cookies-card {
+  position: relative;
+  width: 560px;
+  max-width: 96%;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 30px;
+  border: 1px solid #eadfd7;
+  border-radius: 18px;
+  background: #ffffff;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.28);
+}
+
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 17px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #f2eeeb;
+  color: #4b2a17;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.close-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.cookie-icon {
+  width: 65px;
+  height: 65px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 15px;
+  border-radius: 50%;
+  background: #f7e9df;
+  font-size: 34px;
+}
+
+.cookies-card h2 {
+  margin: 0 0 12px;
+  color: #5d3014;
+  font-size: 27px;
+}
+
+.description {
+  margin: 0 0 18px;
+  color: #555555;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.warning {
+  margin-bottom: 13px;
+  padding: 13px 15px;
+  border-left: 4px solid #7b421d;
+  border-radius: 7px;
+  background: #fff8f2;
+  color: #633618;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.rejected-message {
+  margin-bottom: 13px;
+  padding: 13px 15px;
+  border-left: 4px solid #cf4037;
+  border-radius: 7px;
+  background: #fff0ef;
+  color: #aa302a;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.cookie-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 0;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.cookie-option.necessary {
+  padding-right: 3px;
+  background: #fffdfb;
+}
+
+.cookie-information {
+  flex: 1;
+}
+
+.cookie-option h3 {
+  margin: 0;
+  color: #222222;
+  font-size: 16px;
+}
+
+.cookie-option p {
+  margin: 5px 0 0;
+  color: #666666;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Interruptores */
+
+.switch {
+  position: relative;
+  flex: 0 0 47px;
+  width: 47px;
+  height: 26px;
+}
+
+.switch input {
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 30px;
+  background: #c9c9c9;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.slider::before {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  width: 18px;
+  height: 18px;
+  content: "";
+  border-radius: 50%;
+  background: #ffffff;
+  transition: 0.25s;
+}
+
+.switch input:checked + .slider {
+  background: linear-gradient(90deg, #7a421b, #532a10);
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(21px);
+}
+
+.switch input:disabled + .slider {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* Botones del modal */
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.btn {
+  min-height: 44px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 9px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.reject {
+  border: 1px solid #d2cac4;
+  background: #ffffff;
+  color: #b13933;
+}
+
+.save {
+  background: #694020;
+  color: #ffffff;
+}
+
+.accept {
+  background: linear-gradient(90deg, #7a421b, #4e270e);
+  color: #ffffff;
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Botón visible en la esquina */
+
+.cookie-side-button {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 99998;
+  min-height: 49px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 17px;
+  border: 1px solid #dbcbbf;
+  border-radius: 28px;
+  background: #ffffff;
+  color: #5c3015;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.2);
+  transition: 0.2s;
+}
+
+.cookie-side-button:hover {
+  transform: translateY(-2px);
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+}
+
+.accepted-status {
+  background: #e1f5e5;
+  color: #267b38;
+}
+
+.rejected-status {
+  background: #fde4e2;
+  color: #b13933;
+}
+
+@media (max-width: 600px) {
+  .cookies-card {
+    padding: 25px 20px;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .cookie-side-button {
+    right: 10px;
+    bottom: 10px;
+  }
+}
