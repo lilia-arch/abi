@@ -15,10 +15,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
-import {
-  CookieSettingsComponent
-} from '../cookie-settings/cookie-settings.component';
-
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -29,8 +25,7 @@ import {
     MatInputModule,
     MatIconModule,
     MatButtonModule,
-    MatCheckboxModule,
-    CookieSettingsComponent
+    MatCheckboxModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -42,6 +37,7 @@ export class LoginComponent implements OnInit {
 
   hide = true;
   cargando = false;
+  recordarme = false;
 
   mensaje = '';
   mensajeCookies = '';
@@ -55,77 +51,57 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.verificarCookies();
+    this.cargarUsuarioRecordado();
   }
 
   verificarCookies(): void {
+    const decision = this.cookieService.get(
+      'kasq_cookie_consent'
+    );
 
     this.cookiesPermitidas =
-      this.cookieService.get('cookiesAceptadas') === 'true';
+      decision === 'aceptadas';
 
     if (this.cookiesPermitidas) {
-
       this.mensajeCookies = '';
-
     } else {
-
       this.mensajeCookies =
         'Debes aceptar las cookies para iniciar sesión y navegar.';
-
     }
   }
 
-  actualizarConsentimiento(
-    aceptadas: boolean
-  ): void {
+  cargarUsuarioRecordado(): void {
+    const usuarioGuardado =
+      localStorage.getItem('kasq_usuario_recordado');
 
-    this.cookiesPermitidas = aceptadas;
-
-    if (aceptadas) {
-
-      this.mensajeCookies = '';
-      this.mensaje = '';
-
-    } else {
-
-      this.mensajeCookies =
-        'Las cookies fueron rechazadas. El inicio de sesión está bloqueado.';
-
-      this.username = '';
-      this.password = '';
-
-      localStorage.removeItem('token');
-
-    }
-  }
-
-  bloquearEnlace(
-    event: Event
-  ): void {
-
-    if (!this.cookiesPermitidas) {
-      event.preventDefault();
+    if (usuarioGuardado) {
+      this.username = usuarioGuardado;
+      this.recordarme = true;
     }
   }
 
   onLogin(): void {
-
     this.mensaje = '';
 
-    if (!this.cookiesPermitidas) {
+    this.verificarCookies();
 
+    if (!this.cookiesPermitidas) {
       this.mensajeCookies =
         'No puedes iniciar sesión hasta aceptar las cookies.';
 
+      localStorage.removeItem('token');
       return;
     }
 
-    if (
-      !this.username.trim() ||
-      !this.password.trim()
-    ) {
+    const usuarioEscrito =
+      this.username.trim();
 
+    const contrasenaEscrita =
+      this.password.trim();
+
+    if (!usuarioEscrito || !contrasenaEscrita) {
       this.mensaje =
-        'Complete todos los campos';
+        'Completa todos los campos.';
 
       return;
     }
@@ -133,30 +109,54 @@ export class LoginComponent implements OnInit {
     this.cargando = true;
 
     setTimeout(() => {
-
       this.cargando = false;
 
       if (
-        this.username === 'teniskaqs' &&
-        this.password === 'aksq2126'
+        usuarioEscrito === 'teniskaqs' &&
+        contrasenaEscrita === 'aksq2126'
       ) {
-
         localStorage.setItem(
           'token',
           'KASQ-TOKEN'
         );
 
+        if (this.recordarme) {
+          localStorage.setItem(
+            'kasq_usuario_recordado',
+            usuarioEscrito
+          );
+        } else {
+          localStorage.removeItem(
+            'kasq_usuario_recordado'
+          );
+        }
+
+        this.mensaje = '';
+
         this.router.navigate([
           '/dashboard'
         ]);
-
       } else {
+        localStorage.removeItem('token');
 
         this.mensaje =
-          'Usuario o contraseña incorrectos';
-
+          'Usuario o contraseña incorrectos.';
       }
-
     }, 800);
+  }
+
+  bloquearEnlace(
+    event: Event
+  ): void {
+    event.preventDefault();
+
+    if (!this.cookiesPermitidas) {
+      this.mensajeCookies =
+        'Debes aceptar las cookies antes de continuar.';
+      return;
+    }
+
+    this.mensaje =
+      'La recuperación de contraseña todavía no está disponible.';
   }
 }

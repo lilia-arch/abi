@@ -17,7 +17,10 @@ export class CookieSettingsComponent implements OnInit {
 
   mostrarPanel = false;
 
-  decision: 'aceptadas' | 'rechazadas' | 'pendiente' = 'pendiente';
+  decision:
+    'aceptadas' |
+    'rechazadas' |
+    'pendiente' = 'pendiente';
 
   cookies = {
     necesarias: true,
@@ -26,12 +29,13 @@ export class CookieSettingsComponent implements OnInit {
     marketing: false
   };
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.cargarConfiguracion();
 
-    // Muestra automáticamente la ventana si no hay decisión.
     if (this.decision === 'pendiente') {
       this.mostrarPanel = true;
     }
@@ -43,13 +47,13 @@ export class CookieSettingsComponent implements OnInit {
   }
 
   cerrarPanel(): void {
-    // Solo se puede cerrar si ya aceptó o rechazó.
     if (this.decision !== 'pendiente') {
       this.mostrarPanel = false;
     }
   }
 
   aceptarTodas(): void {
+
     this.cookies = {
       necesarias: true,
       preferencias: true,
@@ -57,21 +61,18 @@ export class CookieSettingsComponent implements OnInit {
       marketing: true
     };
 
-    this.guardarConsentimiento('aceptadas');
+    this.guardarConsentimiento();
   }
 
   guardarConfiguracion(): void {
-    /*
-      Las cookies necesarias siempre permanecen activas.
-      Al guardar la configuración se considera que el usuario
-      aceptó el funcionamiento básico de la aplicación.
-    */
+
     this.cookies.necesarias = true;
 
-    this.guardarConsentimiento('aceptadas');
+    this.guardarConsentimiento();
   }
 
   rechazarCookies(): void {
+
     this.cookies = {
       necesarias: true,
       preferencias: false,
@@ -81,50 +82,79 @@ export class CookieSettingsComponent implements OnInit {
 
     this.decision = 'rechazadas';
 
-    this.guardarCookieConsentimiento('rechazadas');
+    this.guardarCookieConsentimiento(
+      'rechazadas'
+    );
 
     localStorage.setItem(
       'kasq_cookie_preferences',
       JSON.stringify(this.cookies)
     );
 
-    this.mostrarPanel = false;
+    /*
+      Eliminamos cualquier sesión existente.
+    */
 
-    // Al rechazar, no permite navegar dentro del sistema.
-    this.router.navigate(['/login']);
-  }
+    localStorage.removeItem('token');
 
-  private guardarConsentimiento(
-    decision: 'aceptadas'
-  ): void {
-    this.decision = decision;
+    /*
+      Eliminamos rutas pendientes.
+    */
 
-    this.guardarCookieConsentimiento(decision);
-
-    localStorage.setItem(
-      'kasq_cookie_preferences',
-      JSON.stringify(this.cookies)
-    );
-
-    this.mostrarPanel = false;
-
-    const rutaPendiente = sessionStorage.getItem(
+    sessionStorage.removeItem(
       'kasq_return_url'
     );
 
-    if (rutaPendiente) {
-      sessionStorage.removeItem('kasq_return_url');
-      this.router.navigateByUrl(rutaPendiente);
-      return;
-    }
+    this.mostrarPanel = false;
 
-    this.router.navigate(['/dashboard']);
+    /*
+      Siempre permanece en login.
+    */
+
+    this.router.navigate(['/login']);
+  }
+
+  private guardarConsentimiento(): void {
+
+    this.decision = 'aceptadas';
+
+    this.guardarCookieConsentimiento(
+      'aceptadas'
+    );
+
+    localStorage.setItem(
+      'kasq_cookie_preferences',
+      JSON.stringify(this.cookies)
+    );
+
+    /*
+      Muy importante:
+      eliminamos la ruta pendiente.
+    */
+
+    sessionStorage.removeItem(
+      'kasq_return_url'
+    );
+
+    this.mostrarPanel = false;
+
+    /*
+      Aceptar cookies NO inicia sesión.
+
+      Siempre manda al login.
+    */
+
+    this.router.navigate(['/login']);
   }
 
   private guardarCookieConsentimiento(
-    decision: 'aceptadas' | 'rechazadas'
+    decision:
+      'aceptadas' |
+      'rechazadas'
   ): void {
-    const unAnio = 60 * 60 * 24 * 365;
+
+    const unAnio =
+      60 * 60 * 24 * 365;
 
     document.cookie =
       `kasq_cookie_consent=${decision};` +
@@ -134,59 +164,98 @@ export class CookieSettingsComponent implements OnInit {
   }
 
   private cargarConfiguracion(): void {
-    const consentimiento = this.leerCookie(
-      'kasq_cookie_consent'
-    );
 
-    if (consentimiento === 'aceptadas') {
+    const consentimiento =
+      this.leerCookie(
+        'kasq_cookie_consent'
+      );
+
+    if (
+      consentimiento === 'aceptadas'
+    ) {
+
       this.decision = 'aceptadas';
-    } else if (consentimiento === 'rechazadas') {
+
+    } else if (
+      consentimiento === 'rechazadas'
+    ) {
+
       this.decision = 'rechazadas';
+
     } else {
+
       this.decision = 'pendiente';
+
     }
 
-    const preferenciasGuardadas = localStorage.getItem(
-      'kasq_cookie_preferences'
-    );
+    const preferenciasGuardadas =
+      localStorage.getItem(
+        'kasq_cookie_preferences'
+      );
 
     if (preferenciasGuardadas) {
+
       try {
-        const preferencias = JSON.parse(
-          preferenciasGuardadas
-        );
+
+        const preferencias =
+          JSON.parse(
+            preferenciasGuardadas
+          );
 
         this.cookies = {
           necesarias: true,
+
           preferencias:
-            preferencias.preferencias === true,
+            preferencias.preferencias
+              === true,
+
           estadisticas:
-            preferencias.estadisticas === true,
+            preferencias.estadisticas
+              === true,
+
           marketing:
-            preferencias.marketing === true
+            preferencias.marketing
+              === true
         };
+
       } catch (error) {
+
         console.error(
-          'No se pudieron leer las preferencias:',
+          'Error leyendo preferencias:',
           error
         );
+
       }
     }
   }
 
-  private leerCookie(nombre: string): string | null {
-    const cookies = document.cookie.split(';');
+  private leerCookie(
+    nombre: string
+  ): string | null {
 
-    const cookieEncontrada = cookies.find((cookie) =>
-      cookie.trim().startsWith(`${nombre}=`)
-    );
+    const cookies =
+      document.cookie.split(';');
+
+    const cookieEncontrada =
+      cookies.find(
+        (cookie) =>
+          cookie
+            .trim()
+            .startsWith(
+              `${nombre}=`
+            )
+      );
 
     if (!cookieEncontrada) {
       return null;
     }
 
     return decodeURIComponent(
-      cookieEncontrada.trim().substring(nombre.length + 1)
+      cookieEncontrada
+        .trim()
+        .substring(
+          nombre.length + 1
+        )
     );
   }
 }

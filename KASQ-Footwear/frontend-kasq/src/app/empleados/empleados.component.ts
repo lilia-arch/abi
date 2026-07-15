@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import {
+  RouterLink,
+  RouterLinkActive
+} from '@angular/router';
 import {
   HttpClient,
-  HttpClientModule
+  HttpClientModule,
+  HttpErrorResponse
 } from '@angular/common/http';
 
 @Component({
@@ -14,6 +18,7 @@ import {
     CommonModule,
     FormsModule,
     RouterLink,
+    RouterLinkActive,
     HttpClientModule
   ],
   templateUrl: './empleados.component.html',
@@ -21,15 +26,22 @@ import {
 })
 export class EmpleadosComponent implements OnInit {
 
-  /* =========================
+  /* =========================================
      CONFIGURACIÓN DE LA API
-  ========================== */
 
-  apiUrl: string = 'http://localhost:3000';
+     IMPORTANTE:
+     No utilizar http://localhost:3000 porque
+     desde un teléfono localhost sería el celular.
 
-  /* =========================
+     Angular enviará /api al proxy y el proxy
+     lo redirigirá al backend del puerto 3000.
+  ========================================= */
+
+  private readonly apiUrl: string = '/api';
+
+  /* =========================================
      LISTAS Y FILTROS
-  ========================== */
+  ========================================= */
 
   empleados: any[] = [];
   empleadosFiltrados: any[] = [];
@@ -43,9 +55,9 @@ export class EmpleadosComponent implements OnInit {
   guardando: boolean = false;
   eliminandoId: number | null = null;
 
-  /* =========================
+  /* =========================================
      TURNOS DISPONIBLES
-  ========================== */
+  ========================================= */
 
   turnos: string[] = [
     'Matutino',
@@ -53,35 +65,28 @@ export class EmpleadosComponent implements OnInit {
     'Nocturno'
   ];
 
-  /* =========================
-     VENTANA DE EDICIÓN
-  ========================== */
+  /* =========================================
+     MODAL DE EDICIÓN
+  ========================================= */
 
   mostrarModalEditar: boolean = false;
 
-  empleadoEditando: any = this.crearEmpleadoVacio();
+  empleadoEditando: any =
+    this.crearEmpleadoVacio();
 
   fotoNueva: File | null = null;
-
-  /* =========================
-     CONSTRUCTOR
-  ========================== */
 
   constructor(
     private http: HttpClient
   ) {}
 
-  /* =========================
-     INICIO
-  ========================== */
-
   ngOnInit(): void {
     this.obtenerEmpleados();
   }
 
-  /* =========================
-     EMPLEADO VACÍO
-  ========================== */
+  /* =========================================
+     CREAR EMPLEADO VACÍO
+  ========================================= */
 
   crearEmpleadoVacio(): any {
     return {
@@ -116,26 +121,35 @@ export class EmpleadosComponent implements OnInit {
     };
   }
 
-  /* =========================
+  /* =========================================
      OBTENER EMPLEADOS
-  ========================== */
+  ========================================= */
 
   obtenerEmpleados(): void {
+    if (this.cargando) {
+      return;
+    }
+
     this.cargando = true;
 
     this.http.get<any[]>(
       `${this.apiUrl}/empleados`
     ).subscribe({
-      next: (respuesta) => {
+      next: (respuesta: any[]) => {
         this.empleados = Array.isArray(respuesta)
           ? respuesta
           : [];
 
         this.filtrarEmpleados();
         this.cargando = false;
+
+        console.log(
+          'Empleados obtenidos:',
+          this.empleados
+        );
       },
 
-      error: (error) => {
+      error: (error: HttpErrorResponse) => {
         console.error(
           'Error al obtener empleados:',
           error
@@ -145,90 +159,121 @@ export class EmpleadosComponent implements OnInit {
         this.empleadosFiltrados = [];
         this.cargando = false;
 
-        alert(
-          'No se pudieron obtener los empleados. Verifica que el backend esté encendido.'
-        );
+        let mensaje =
+          'No se pudieron obtener los empleados.';
+
+        if (error.status === 0) {
+          mensaje =
+            'No se pudo conectar con el backend. Verifica que Node.js esté encendido.';
+        } else if (error.status === 404) {
+          mensaje =
+            'No se encontró la ruta /api/empleados. Revisa el proxy de Angular.';
+        } else if (error.status === 500) {
+          mensaje =
+            error.error?.mensaje ||
+            error.error?.error ||
+            'El servidor tuvo un error al consultar los empleados.';
+        } else if (
+          error.error?.mensaje ||
+          error.error?.error
+        ) {
+          mensaje =
+            error.error?.mensaje ||
+            error.error?.error;
+        }
+
+        alert(mensaje);
       }
     });
   }
 
-  /* =========================
+  /* =========================================
      FILTRAR EMPLEADOS
-  ========================== */
+  ========================================= */
 
   filtrarEmpleados(): void {
     const texto = this.busqueda
       .trim()
       .toLowerCase();
 
-    this.empleadosFiltrados = this.empleados.filter(
-      (empleado: any) => {
+    this.empleadosFiltrados =
+      this.empleados.filter(
+        (empleado: any) => {
 
-        const nombre = this.obtenerNombreCompleto(
-          empleado
-        ).toLowerCase();
+          const nombre =
+            this.obtenerNombreCompleto(
+              empleado
+            ).toLowerCase();
 
-        const numero = String(
-          empleado.NumeroEmpleado ??
-          empleado.numeroEmpleado ??
-          ''
-        ).toLowerCase();
+          const numero = String(
+            empleado.NumeroEmpleado ??
+            empleado.numeroEmpleado ??
+            ''
+          ).toLowerCase();
 
-        const puesto = String(
-          empleado.Puesto ??
-          empleado.puesto ??
-          ''
-        ).toLowerCase();
+          const puesto = String(
+            empleado.Puesto ??
+            empleado.puesto ??
+            ''
+          ).toLowerCase();
 
-        const correo = String(
-          empleado.Correo ??
-          empleado.correo ??
-          ''
-        ).toLowerCase();
+          const correo = String(
+            empleado.Correo ??
+            empleado.correo ??
+            ''
+          ).toLowerCase();
 
-        const departamento =
-          this.obtenerDepartamento(
-            empleado.IdDepartamento ??
-            empleado.idDepartamento
+          const departamento =
+            this.obtenerDepartamento(
+              empleado.IdDepartamento ??
+              empleado.idDepartamento
+            );
+
+          const estado =
+            this.obtenerEstado(empleado);
+
+          const turno =
+            this.obtenerTurno(empleado);
+
+          const coincideTexto =
+            !texto ||
+            nombre.includes(texto) ||
+            numero.includes(texto) ||
+            puesto.includes(texto) ||
+            correo.includes(texto) ||
+            departamento
+              .toLowerCase()
+              .includes(texto) ||
+            estado
+              .toLowerCase()
+              .includes(texto) ||
+            turno
+              .toLowerCase()
+              .includes(texto);
+
+          const coincideDepartamento =
+            !this.departamentoSeleccionado ||
+            departamento ===
+              this.departamentoSeleccionado;
+
+          const coincideEstado =
+            !this.estadoSeleccionado ||
+            estado ===
+              this.estadoSeleccionado;
+
+          const coincideTurno =
+            !this.turnoSeleccionado ||
+            turno ===
+              this.turnoSeleccionado;
+
+          return (
+            coincideTexto &&
+            coincideDepartamento &&
+            coincideEstado &&
+            coincideTurno
           );
-
-        const estado =
-          this.obtenerEstado(empleado);
-
-        const turno =
-          this.obtenerTurno(empleado);
-
-        const coincideTexto =
-          !texto ||
-          nombre.includes(texto) ||
-          numero.includes(texto) ||
-          puesto.includes(texto) ||
-          correo.includes(texto) ||
-          turno.toLowerCase().includes(texto);
-
-        const coincideDepartamento =
-          !this.departamentoSeleccionado ||
-          departamento ===
-            this.departamentoSeleccionado;
-
-        const coincideEstado =
-          !this.estadoSeleccionado ||
-          estado ===
-            this.estadoSeleccionado;
-
-        const coincideTurno =
-          !this.turnoSeleccionado ||
-          turno ===
-            this.turnoSeleccionado;
-
-        return (
-          coincideTexto &&
-          coincideDepartamento &&
-          coincideEstado &&
-          coincideTurno
-        );
-      }
-    );
+        }
+      );
   }
 
   limpiarFiltros(): void {
@@ -240,9 +285,9 @@ export class EmpleadosComponent implements OnInit {
     this.filtrarEmpleados();
   }
 
-  /* =========================
-     INFORMACIÓN DE LA TABLA
-  ========================== */
+  /* =========================================
+     INFORMACIÓN DEL EMPLEADO
+  ========================================= */
 
   obtenerNombreCompleto(
     empleado: any
@@ -285,8 +330,9 @@ export class EmpleadosComponent implements OnInit {
       };
 
     return (
-      departamentos[String(idDepartamento)] ||
-      'Sin departamento'
+      departamentos[
+        String(idDepartamento)
+      ] || 'Sin departamento'
     );
   }
 
@@ -321,21 +367,31 @@ export class EmpleadosComponent implements OnInit {
 
     if (
       id === null ||
-      id === undefined
+      id === undefined ||
+      id === ''
     ) {
       return null;
     }
 
-    return Number(id);
+    const idNumero = Number(id);
+
+    return Number.isNaN(idNumero)
+      ? null
+      : idNumero;
   }
+
+  /* =========================================
+     FOTO DEL EMPLEADO
+  ========================================= */
 
   fotoEmpleado(
     empleado: any
   ): string {
-    const foto =
+    const foto = String(
       empleado.Foto ??
       empleado.foto ??
-      '';
+      ''
+    ).trim();
 
     if (!foto) {
       return '';
@@ -343,17 +399,47 @@ export class EmpleadosComponent implements OnInit {
 
     if (
       foto.startsWith('http://') ||
-      foto.startsWith('https://')
+      foto.startsWith('https://') ||
+      foto.startsWith('data:')
     ) {
       return foto;
     }
 
+    /*
+     Si la base de datos guarda:
+     /uploads/imagen.jpg
+    */
     if (foto.startsWith('/uploads/')) {
       return `${this.apiUrl}${foto}`;
     }
 
+    /*
+     Si la base de datos guarda:
+     uploads/imagen.jpg
+    */
+    if (foto.startsWith('uploads/')) {
+      return `${this.apiUrl}/${foto}`;
+    }
+
+    /*
+     Si solamente guarda:
+     imagen.jpg
+    */
     return `${this.apiUrl}/uploads/${foto}`;
   }
+
+  manejarErrorFoto(
+    event: Event
+  ): void {
+    const imagen =
+      event.target as HTMLImageElement;
+
+    imagen.style.display = 'none';
+  }
+
+  /* =========================================
+     TOTALES
+  ========================================= */
 
   totalActivos(): number {
     return this.empleados.filter(
@@ -364,19 +450,23 @@ export class EmpleadosComponent implements OnInit {
   }
 
   totalDepartamentos(): number {
-    const departamentos = this.empleados
-      .map((empleado: any) =>
-        this.obtenerDepartamento(
-          empleado.IdDepartamento ??
-          empleado.idDepartamento
+    const departamentos =
+      this.empleados
+        .map((empleado: any) =>
+          this.obtenerDepartamento(
+            empleado.IdDepartamento ??
+            empleado.idDepartamento
+          )
         )
-      )
-      .filter(
-        (departamento: string) =>
-          departamento !== 'Sin departamento'
-      );
+        .filter(
+          (departamento: string) =>
+            departamento !==
+            'Sin departamento'
+        );
 
-    return new Set(departamentos).size;
+    return new Set(
+      departamentos
+    ).size;
   }
 
   totalTurno(
@@ -384,13 +474,14 @@ export class EmpleadosComponent implements OnInit {
   ): number {
     return this.empleados.filter(
       (empleado: any) =>
-        this.obtenerTurno(empleado) === turno
+        this.obtenerTurno(empleado) ===
+        turno
     ).length;
   }
 
-  /* =========================
+  /* =========================================
      ABRIR EDICIÓN
-  ========================== */
+  ========================================= */
 
   editarEmpleado(
     empleado: any
@@ -536,7 +627,8 @@ export class EmpleadosComponent implements OnInit {
 
     this.mostrarModalEditar = true;
 
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow =
+      'hidden';
   }
 
   formatearFechaInput(
@@ -546,7 +638,8 @@ export class EmpleadosComponent implements OnInit {
       return '';
     }
 
-    const texto = String(fecha);
+    const texto =
+      String(fecha).trim();
 
     if (
       /^\d{4}-\d{2}-\d{2}$/.test(texto)
@@ -557,9 +650,9 @@ export class EmpleadosComponent implements OnInit {
     return texto.substring(0, 10);
   }
 
-  /* =========================
+  /* =========================================
      SELECCIONAR TURNO
-  ========================== */
+  ========================================= */
 
   seleccionarTurno(
     turno: string
@@ -573,7 +666,9 @@ export class EmpleadosComponent implements OnInit {
     }
 
     if (
-      !this.turnos.includes(turnoLimpio)
+      !this.turnos.includes(
+        turnoLimpio
+      )
     ) {
       this.empleadoEditando.turno = '';
 
@@ -586,16 +681,11 @@ export class EmpleadosComponent implements OnInit {
 
     this.empleadoEditando.turno =
       turnoLimpio;
-
-    console.log(
-      'Turno seleccionado:',
-      this.empleadoEditando.turno
-    );
   }
 
-  /* =========================
-     FOTO NUEVA
-  ========================== */
+  /* =========================================
+     SELECCIONAR FOTO NUEVA
+  ========================================= */
 
   seleccionarFotoEditar(
     event: Event
@@ -611,9 +701,10 @@ export class EmpleadosComponent implements OnInit {
       return;
     }
 
-    const archivo = input.files[0];
+    const archivo =
+      input.files[0];
 
-    const tiposPermitidos = [
+    const tiposPermitidos: string[] = [
       'image/jpeg',
       'image/png',
       'image/gif',
@@ -631,13 +722,14 @@ export class EmpleadosComponent implements OnInit {
 
       input.value = '';
       this.fotoNueva = null;
-
       return;
     }
 
+    const limiteBytes =
+      2 * 1024 * 1024;
+
     if (
-      archivo.size >
-      2 * 1024 * 1024
+      archivo.size > limiteBytes
     ) {
       alert(
         'La imagen no debe pesar más de 2 MB.'
@@ -645,16 +737,15 @@ export class EmpleadosComponent implements OnInit {
 
       input.value = '';
       this.fotoNueva = null;
-
       return;
     }
 
     this.fotoNueva = archivo;
   }
 
-  /* =========================
-     GUARDAR EDICIÓN
-  ========================== */
+  /* =========================================
+     GUARDAR CAMBIOS
+  ========================================= */
 
   guardarCambios(): void {
     if (this.guardando) {
@@ -664,24 +755,29 @@ export class EmpleadosComponent implements OnInit {
     const empleado =
       this.empleadoEditando;
 
-    const nombre =
-      String(empleado.nombre || '').trim();
+    const nombre = String(
+      empleado.nombre || ''
+    ).trim();
 
-    const apellidoPaterno =
-      String(
-        empleado.apellidoPaterno || ''
-      ).trim();
+    const apellidoPaterno = String(
+      empleado.apellidoPaterno || ''
+    ).trim();
 
-    const numeroEmpleado =
-      String(
-        empleado.numeroEmpleado || ''
-      ).trim();
+    const numeroEmpleado = String(
+      empleado.numeroEmpleado || ''
+    ).trim();
 
-    const puesto =
-      String(empleado.puesto || '').trim();
+    const puesto = String(
+      empleado.puesto || ''
+    ).trim();
 
-    const turno =
-      String(empleado.turno || '').trim();
+    const turno = String(
+      empleado.turno || ''
+    ).trim();
+
+    const idDepartamento = String(
+      empleado.idDepartamento || ''
+    ).trim();
 
     if (
       !empleado.idEmpleado ||
@@ -689,7 +785,7 @@ export class EmpleadosComponent implements OnInit {
       !apellidoPaterno ||
       !numeroEmpleado ||
       !puesto ||
-      !empleado.idDepartamento ||
+      !idDepartamento ||
       !turno
     ) {
       alert(
@@ -709,9 +805,25 @@ export class EmpleadosComponent implements OnInit {
       return;
     }
 
+    const correo = String(
+      empleado.correo || ''
+    ).trim();
+
+    if (
+      correo &&
+      !this.correoValido(correo)
+    ) {
+      alert(
+        'Escribe un correo electrónico válido.'
+      );
+
+      return;
+    }
+
     this.guardando = true;
 
-    const datos = new FormData();
+    const datos =
+      new FormData();
 
     if (this.fotoNueva) {
       datos.append(
@@ -722,7 +834,9 @@ export class EmpleadosComponent implements OnInit {
 
     datos.append(
       'fotoActual',
-      empleado.fotoActual || ''
+      String(
+        empleado.fotoActual || ''
+      )
     );
 
     datos.append(
@@ -754,7 +868,9 @@ export class EmpleadosComponent implements OnInit {
 
     datos.append(
       'celular',
-      String(empleado.celular || '').trim()
+      String(
+        empleado.celular || ''
+      ).trim()
     );
 
     datos.append(
@@ -766,7 +882,7 @@ export class EmpleadosComponent implements OnInit {
 
     datos.append(
       'correo',
-      String(empleado.correo || '').trim()
+      correo
     );
 
     datos.append(
@@ -781,7 +897,7 @@ export class EmpleadosComponent implements OnInit {
 
     datos.append(
       'idDepartamento',
-      String(empleado.idDepartamento)
+      idDepartamento
     );
 
     datos.append(
@@ -856,10 +972,16 @@ export class EmpleadosComponent implements OnInit {
       `${this.apiUrl}/empleados/${empleado.idEmpleado}`,
       datos
     ).subscribe({
-      next: () => {
+      next: (respuesta: any) => {
+        console.log(
+          'Empleado actualizado:',
+          respuesta
+        );
+
         this.guardando = false;
 
         alert(
+          respuesta?.mensaje ||
           'Empleado actualizado correctamente.'
         );
 
@@ -867,7 +989,9 @@ export class EmpleadosComponent implements OnInit {
         this.obtenerEmpleados();
       },
 
-      error: (error) => {
+      error: (
+        error: HttpErrorResponse
+      ) => {
         console.error(
           'Error al actualizar empleado:',
           error
@@ -876,8 +1000,8 @@ export class EmpleadosComponent implements OnInit {
         this.guardando = false;
 
         const mensaje =
-          error?.error?.mensaje ||
-          error?.error?.error ||
+          error.error?.mensaje ||
+          error.error?.error ||
           'No se pudo actualizar el empleado.';
 
         alert(mensaje);
@@ -885,9 +1009,18 @@ export class EmpleadosComponent implements OnInit {
     });
   }
 
-  /* =========================
-     CERRAR EDICIÓN
-  ========================== */
+  correoValido(
+    correo: string
+  ): boolean {
+    const expresion =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    return expresion.test(correo);
+  }
+
+  /* =========================================
+     CERRAR MODAL
+  ========================================= */
 
   cerrarModalEditar(): void {
     if (this.guardando) {
@@ -914,9 +1047,9 @@ export class EmpleadosComponent implements OnInit {
     }
   }
 
-  /* =========================
+  /* =========================================
      ELIMINAR EMPLEADO
-  ========================== */
+  ========================================= */
 
   eliminarEmpleado(
     empleado: any
@@ -932,8 +1065,16 @@ export class EmpleadosComponent implements OnInit {
       return;
     }
 
+    if (
+      this.eliminandoId !== null
+    ) {
+      return;
+    }
+
     const nombreCompleto =
-      this.obtenerNombreCompleto(empleado);
+      this.obtenerNombreCompleto(
+        empleado
+      );
 
     const confirmar = confirm(
       `¿Seguro que deseas eliminar a ${nombreCompleto}? Esta acción no se puede deshacer.`
@@ -943,22 +1084,26 @@ export class EmpleadosComponent implements OnInit {
       return;
     }
 
-    this.eliminandoId = idEmpleado;
+    this.eliminandoId =
+      idEmpleado;
 
-    this.http.delete(
+    this.http.delete<any>(
       `${this.apiUrl}/empleados/${idEmpleado}`
     ).subscribe({
-      next: () => {
+      next: (respuesta: any) => {
         this.eliminandoId = null;
 
         alert(
+          respuesta?.mensaje ||
           'Empleado eliminado correctamente.'
         );
 
         this.obtenerEmpleados();
       },
 
-      error: (error) => {
+      error: (
+        error: HttpErrorResponse
+      ) => {
         console.error(
           'Error al eliminar empleado:',
           error
@@ -967,12 +1112,21 @@ export class EmpleadosComponent implements OnInit {
         this.eliminandoId = null;
 
         const mensaje =
-          error?.error?.mensaje ||
-          error?.error?.error ||
+          error.error?.mensaje ||
+          error.error?.error ||
           'No se pudo eliminar el empleado.';
 
         alert(mensaje);
       }
     });
   }
+
+  /* =========================================
+     RECARGAR LISTA
+  ========================================= */
+
+  recargarEmpleados(): void {
+    this.obtenerEmpleados();
+  }
+
 }
