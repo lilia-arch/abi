@@ -1,0 +1,74 @@
+<div class="login-container">
+
+    <div class="login-card">
+
+        <h1>KASQ Footwear</h1>
+
+        <h2>Portal del empleado</h2>
+
+        <p class="subtitulo">
+            Ingresa con el correo registrado por Recursos Humanos
+        </p>
+
+
+        <div class="campo">
+
+            <label>
+                Correo electrónico
+            </label>
+
+            <input
+                type="email"
+                placeholder="ejemplo@correo.com"
+                [(ngModel)]="correo">
+
+        </div>
+
+
+
+        <div class="campo">
+
+            <label>
+                Contraseña
+            </label>
+
+            <input
+                type="password"
+                placeholder="Contraseña"
+                [(ngModel)]="password">
+
+        </div>
+
+
+
+        <button
+            class="btn-login"
+            (click)="ingresar()"
+            [disabled]="cargando">
+
+            {{ cargando ? 'Ingresando...' : 'Iniciar sesión' }}
+
+        </button>
+
+
+
+        <button
+            class="btn-crear"
+            (click)="crearPassword()">
+
+            Es mi primera vez
+            <br>
+            Crear contraseña
+
+        </button>
+
+
+
+        <p class="mensaje">
+            {{ mensaje }}
+        </p>
+
+
+    </div>
+
+</div>

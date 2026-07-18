@@ -1,0 +1,118 @@
+.dashboard {
+
+    min-height: 100vh;
+    background: #f5efe8;
+    padding: 40px;
+
+    font-family: Arial, sans-serif;
+
+}
+
+
+
+h1 {
+
+    text-align: center;
+
+    color: #6b3e1e;
+
+    font-size: 38px;
+
+}
+
+
+
+h2 {
+
+    text-align: center;
+
+    color: #8b5a2b;
+
+    margin-bottom: 30px;
+
+}
+
+
+
+.card {
+
+    background: white;
+
+    width: 80%;
+
+    margin: 25px auto;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,.15);
+
+}
+
+
+
+.card h3 {
+
+    color: #6b3e1e;
+
+    border-bottom: 2px solid #c8a27a;
+
+    padding-bottom: 10px;
+
+}
+
+
+
+.card p {
+
+    font-size: 17px;
+
+    color: #444;
+
+}
+
+
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 15px;
+
+}
+
+
+
+th {
+
+    background: #6b3e1e;
+
+    color:white;
+
+    padding:12px;
+
+}
+
+
+
+td {
+
+    padding:12px;
+
+    border-bottom:1px solid #ddd;
+
+    text-align:center;
+
+}
+
+
+
+tr:hover {
+
+    background:#f5efe8;
+
+}

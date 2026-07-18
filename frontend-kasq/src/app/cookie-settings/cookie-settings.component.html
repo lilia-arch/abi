@@ -1,0 +1,226 @@
+<!-- Botón lateral siempre disponible -->
+
+<button
+  type="button"
+  class="cookie-side-button"
+  (click)="abrirPanel()">
+
+  <span>🍪</span>
+
+  Configurar cookies
+
+  <small
+    class="status accepted-status"
+    *ngIf="decision === 'aceptadas'">
+    Aceptadas
+  </small>
+
+  <small
+    class="status rejected-status"
+    *ngIf="decision === 'rechazadas'">
+    Rechazadas
+  </small>
+
+</button>
+
+
+<!-- Fondo oscuro y ventana -->
+
+<div
+  class="cookies-overlay"
+  *ngIf="mostrarPanel">
+
+  <div
+    class="cookies-card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="cookies-title">
+
+    <button
+      type="button"
+      class="close-button"
+      aria-label="Cerrar"
+      [disabled]="decision === 'pendiente'"
+      (click)="cerrarPanel()">
+
+      ×
+
+    </button>
+
+    <div class="cookie-icon">
+      🍪
+    </div>
+
+    <h2 id="cookies-title">
+      Configuración de Cookies
+    </h2>
+
+    <p class="description">
+      Usamos cookies para mejorar tu experiencia en KASQ
+      Footwear. Puedes aceptar todas o elegir cuáles deseas
+      permitir.
+    </p>
+
+    <div class="warning">
+      Para iniciar sesión y navegar dentro del sistema debes
+      aceptar las cookies necesarias.
+    </div>
+
+    <div
+      class="rejected-message"
+      *ngIf="decision === 'rechazadas'">
+
+      Actualmente rechazaste las cookies. Puedes cambiar de
+      opinión y aceptar para ingresar al sistema.
+
+    </div>
+
+
+    <!-- Cookies necesarias -->
+
+    <div class="cookie-option necessary">
+
+      <div class="cookie-information">
+
+        <h3>Cookies necesarias</h3>
+
+        <p>
+          Permiten mantener la sesión y garantizar el
+          funcionamiento correcto del sistema.
+        </p>
+
+      </div>
+
+      <label class="switch">
+
+        <input
+          type="checkbox"
+          [(ngModel)]="cookies.necesarias"
+          disabled>
+
+        <span class="slider"></span>
+
+      </label>
+
+    </div>
+
+
+    <!-- Preferencias -->
+
+    <div class="cookie-option">
+
+      <div class="cookie-information">
+
+        <h3>Cookies de preferencias</h3>
+
+        <p>
+          Guardan las configuraciones y preferencias
+          seleccionadas por el usuario.
+        </p>
+
+      </div>
+
+      <label class="switch">
+
+        <input
+          type="checkbox"
+          [(ngModel)]="cookies.preferencias">
+
+        <span class="slider"></span>
+
+      </label>
+
+    </div>
+
+
+    <!-- Estadísticas -->
+
+    <div class="cookie-option">
+
+      <div class="cookie-information">
+
+        <h3>Cookies estadísticas</h3>
+
+        <p>
+          Ayudan a conocer el uso general de la aplicación.
+        </p>
+
+      </div>
+
+      <label class="switch">
+
+        <input
+          type="checkbox"
+          [(ngModel)]="cookies.estadisticas">
+
+        <span class="slider"></span>
+
+      </label>
+
+    </div>
+
+
+    <!-- Marketing -->
+
+    <div class="cookie-option">
+
+      <div class="cookie-information">
+
+        <h3>Cookies de marketing</h3>
+
+        <p>
+          Permiten personalizar contenido, recomendaciones o
+          anuncios.
+        </p>
+
+      </div>
+
+      <label class="switch">
+
+        <input
+          type="checkbox"
+          [(ngModel)]="cookies.marketing">
+
+        <span class="slider"></span>
+
+      </label>
+
+    </div>
+
+
+    <!-- Botones -->
+
+    <div class="buttons">
+
+      <button
+        type="button"
+        class="btn reject"
+        (click)="rechazarCookies()">
+
+        Rechazar cookies
+
+      </button>
+
+      <button
+        type="button"
+        class="btn save"
+        (click)="guardarConfiguracion()">
+
+        Guardar configuración
+
+      </button>
+
+      <button
+        type="button"
+        class="btn accept"
+        (click)="aceptarTodas()">
+
+        Aceptar todas
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

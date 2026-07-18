@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-node_modules/
-.env
-.env.*
-*.log
-logs/
-dist/
-.angular/
-.vscode/
-coverage/
-=======
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # Compiled output
@@ -51,4 +40,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
->>>>>>> 5b269fd (Subir actualización KASQ Footwear)

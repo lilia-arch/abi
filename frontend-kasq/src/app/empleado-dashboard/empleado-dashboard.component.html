@@ -1,0 +1,243 @@
+<div class="dashboard">
+
+
+    <div class="header">
+
+        <h1>
+            KASQ Footwear
+        </h1>
+
+        <h2>
+            Bienvenido {{perfil.Nombre || 'Empleado'}}
+        </h2>
+
+    </div>
+
+
+
+    <!-- PERFIL DEL EMPLEADO -->
+
+    <div class="card">
+
+        <h3>
+            👤 Mi perfil
+        </h3>
+
+
+        <div class="info">
+
+
+            <p>
+                <strong>Nombre:</strong>
+                {{perfil.Nombre || 'Sin información'}}
+            </p>
+
+
+            <p>
+                <strong>Puesto:</strong>
+                {{perfil.Puesto || 'Sin información'}}
+            </p>
+
+
+            <p>
+                <strong>Departamento:</strong>
+                {{perfil.Departamento || 'Sin información'}}
+            </p>
+
+
+            <p>
+                <strong>Turno:</strong>
+                {{perfil.Turno || 'Sin información'}}
+            </p>
+
+
+            <p>
+                <strong>Número de empleado:</strong>
+                {{perfil.NumeroEmpleado || 'Sin información'}}
+            </p>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+    <!-- HISTORIAL DE PAGOS -->
+
+    <div class="card">
+
+
+        <h3>
+            💰 Historial de pagos
+        </h3>
+
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Fecha
+                    </th>
+
+
+                    <th>
+                        Tipo de pago
+                    </th>
+
+
+                    <th>
+                        Monto
+                    </th>
+
+
+                </tr>
+
+            </thead>
+
+
+
+            <tbody>
+
+
+                <tr *ngFor="let pago of pagos">
+
+
+                    <td>
+                        {{pago.FechaPago | date:'dd/MM/yyyy'}}
+                    </td>
+
+
+                    <td>
+                        {{pago.TipoPago || 'Salario normal'}}
+                    </td>
+
+
+                    <td>
+                        ${{pago.Monto}}
+                    </td>
+
+
+                </tr>
+
+
+
+                <tr *ngIf="pagos.length === 0">
+
+                    <td colspan="3">
+                        No hay pagos registrados
+                    </td>
+
+                </tr>
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+
+
+
+
+
+    <!-- HORAS EXTRAS -->
+
+    <div class="card">
+
+
+        <h3>
+            ⏱ Horas extras
+        </h3>
+
+
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+
+                    <th>
+                        Fecha
+                    </th>
+
+
+                    <th>
+                        Horas
+                    </th>
+
+
+                    <th>
+                        Pago extra
+                    </th>
+
+
+                </tr>
+
+
+            </thead>
+
+
+
+            <tbody>
+
+
+                <tr *ngFor="let hora of horas">
+
+
+                    <td>
+                        {{hora.Fecha | date:'dd/MM/yyyy'}}
+                    </td>
+
+
+                    <td>
+                        {{hora.Horas || hora.HorasTrabajo}}
+                    </td>
+
+
+                    <td>
+                        ${{hora.Pago || hora.PagoHora}}
+                    </td>
+
+
+                </tr>
+
+
+
+                <tr *ngIf="horas.length === 0">
+
+                    <td colspan="3">
+                        No hay horas extras registradas
+                    </td>
+
+                </tr>
+
+
+
+            </tbody>
+
+
+
+        </table>
+
+
+    </div>
+
+
+
+
+</div>

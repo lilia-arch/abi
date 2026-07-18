@@ -1,0 +1,969 @@
+<div class="layout">
+
+  <!-- =========================
+       MENÚ LATERAL
+  ========================== -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h1>KASQ</h1>
+      <span>FOOTWEAR</span>
+    </div>
+
+    <nav>
+
+       <a
+        routerLink="/dashboard"
+        routerLinkActive="active">
+
+        🏠 Inicio
+
+      </a>
+
+      <a
+        routerLink="/empleados"
+        routerLinkActive="active">
+
+        👥 Empleados
+
+      </a>
+
+      <a
+        routerLink="/horarios"
+        routerLinkActive="active">
+
+        🕒 Horarios
+
+      </a>
+
+      <a
+        routerLink="/registrar-hora-extra"
+        routerLinkActive="active">
+
+        ⏱ Horas Extras
+
+      </a>
+
+      <a
+        routerLink="/nomina"
+        routerLinkActive="active">
+
+        💳 Nómina
+
+      </a>
+
+      <a
+        routerLink="/pagos"
+        routerLinkActive="active">
+
+        💵 Pagos
+
+      </a>
+
+      <a
+        routerLink="/registrar-empleado"
+        routerLinkActive="active">
+
+        👤 Registrar Empleado
+
+      </a>
+
+    </nav>
+
+    <div
+      class="logout"
+      routerLink="/login"
+      role="button"
+      tabindex="0">
+
+      ↪ Cerrar sesión
+
+    </div>
+
+  </aside>
+
+  <!-- =========================
+       CONTENIDO PRINCIPAL
+  ========================== -->
+  <main class="main">
+
+    <!-- BARRA SUPERIOR -->
+    <header class="topbar">
+
+     
+
+      <div class="user">
+
+        <div class="bell">
+          🔔
+          <span></span>
+        </div>
+
+        <div class="profile">
+
+          <div class="avatar">
+            👤
+          </div>
+
+          <div>
+            <strong>RH Admin</strong>
+            <p>Administrador</p>
+          </div>
+
+          <span>⌄</span>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <!-- =========================
+         CONTENIDO
+    ========================== -->
+    <section class="content">
+
+      <!-- TÍTULO -->
+      <div class="title-row">
+
+        <div>
+
+          <h2>
+            {{ modoEdicion ? 'Editar Empleado' : 'Registrar Empleado' }}
+          </h2>
+
+          <p>
+            <span>Empleados</span>
+            ›
+            {{ modoEdicion ? 'Editar Empleado' : 'Registrar Empleado' }}
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          class="back-btn"
+          routerLink="/empleados">
+          ← Volver a Empleados
+        </button>
+
+      </div>
+
+      <!-- PESTAÑA -->
+      <div class="tabs">
+
+        <button
+          type="button"
+          class="active">
+          Datos del Empleado
+        </button>
+
+      </div>
+
+      <!-- MENSAJE DE CARGA -->
+      <div
+        class="loading-message"
+        *ngIf="cargando">
+        Cargando información del empleado...
+      </div>
+
+      <!-- =========================
+           CONTENEDOR
+      ========================== -->
+      <div class="container">
+
+        <!-- FORMULARIO -->
+        <div class="formulario">
+
+          <!-- =========================
+               DATOS PERSONALES
+          ========================== -->
+          <div class="card">
+
+            <h3>Datos Personales</h3>
+
+            <div class="row">
+
+              <!-- FOTO -->
+              <div class="foto">
+
+                <label>
+                  Foto del Empleado
+                </label>
+
+                <label class="upload">
+
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif"
+                    (change)="seleccionarFoto($event)"
+                    [disabled]="guardando || cargando"
+                    hidden>
+
+                  <div class="icon">
+                    👤
+                  </div>
+
+                  <h4>
+                    {{ modoEdicion ? 'Cambiar foto' : 'Subir foto' }}
+                  </h4>
+
+                  <small>
+                    JPG, PNG o GIF. Máx. 2 MB
+                  </small>
+
+                  <p
+                    *ngIf="foto"
+                    class="selected-file">
+                    ✔ {{ foto.name }}
+                  </p>
+
+                  <p
+                    *ngIf="
+                      modoEdicion &&
+                      empleado.fotoActual &&
+                      !foto
+                    "
+                    class="current-photo">
+                    Foto actual registrada
+                  </p>
+
+                </label>
+
+              </div>
+
+              <!-- DATOS -->
+              <div class="datos">
+
+                <div class="grid3">
+
+                  <div class="campo">
+
+                    <label for="nombre">
+                      Nombre(s)
+                      <b>*</b>
+                    </label>
+
+                    <input
+                      id="nombre"
+                      type="text"
+                      name="nombre"
+                      placeholder="Ingresa el nombre"
+                      [(ngModel)]="empleado.nombre"
+                      [disabled]="guardando || cargando">
+
+                  </div>
+
+                  <div class="campo">
+
+                    <label for="apellidoPaterno">
+                      Apellido Paterno
+                      <b>*</b>
+                    </label>
+
+                    <input
+                      id="apellidoPaterno"
+                      type="text"
+                      name="apellidoPaterno"
+                      placeholder="Ingresa el apellido paterno"
+                      [(ngModel)]="empleado.apellidoPaterno"
+                      [disabled]="guardando || cargando">
+
+                  </div>
+
+                  <div class="campo">
+
+                    <label for="apellidoMaterno">
+                      Apellido Materno
+                    </label>
+
+                    <input
+                      id="apellidoMaterno"
+                      type="text"
+                      name="apellidoMaterno"
+                      placeholder="Ingresa el apellido materno"
+                      [(ngModel)]="empleado.apellidoMaterno"
+                      [disabled]="guardando || cargando">
+
+                  </div>
+
+                </div>
+
+                <div class="grid3">
+
+                  <div class="campo">
+
+                    <label for="fechaNacimiento">
+                      Fecha de Nacimiento
+                    </label>
+
+                    <input
+                      id="fechaNacimiento"
+                      type="date"
+                      name="fechaNacimiento"
+                      [(ngModel)]="empleado.fechaNacimiento"
+                      [disabled]="guardando || cargando">
+
+                  </div>
+
+                  <div class="campo">
+
+                    <label for="edad">
+                      Edad
+                    </label>
+
+                    <input
+                      id="edad"
+                      type="number"
+                      name="edad"
+                      min="0"
+                      max="120"
+                      placeholder="Edad"
+                      [(ngModel)]="empleado.edad"
+                      [disabled]="guardando || cargando">
+
+                  </div>
+
+                  <div class="campo">
+
+                    <label for="celular">
+                      Número de Celular
+                    </label>
+
+                    <input
+                      id="celular"
+                      type="text"
+                      name="celular"
+                      maxlength="20"
+                      placeholder="Número de celular"
+                      [(ngModel)]="empleado.celular"
+                      [disabled]="guardando || cargando">
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- DIRECCIÓN -->
+            <div class="campo full-field">
+
+              <label for="direccion">
+                Dirección Completa
+              </label>
+
+              <input
+                id="direccion"
+                type="text"
+                name="direccion"
+                placeholder="Calle, número, colonia, municipio y estado"
+                [(ngModel)]="empleado.direccion"
+                [disabled]="guardando || cargando">
+
+            </div>
+
+            <div class="grid3">
+
+              <div class="campo">
+
+                <label for="correo">
+                  Correo Electrónico
+                </label>
+
+                <input
+                  id="correo"
+                  type="email"
+                  name="correo"
+                  placeholder="correo@ejemplo.com"
+                  [(ngModel)]="empleado.correo"
+                  [disabled]="guardando || cargando">
+
+              </div>
+
+              <div class="campo">
+
+                <label for="estadoCivil">
+                  Estado Civil
+                </label>
+
+                <select
+                  id="estadoCivil"
+                  name="estadoCivil"
+                  [(ngModel)]="empleado.estadoCivil"
+                  [disabled]="guardando || cargando">
+
+                  <option value="">
+                    Selecciona...
+                  </option>
+
+                  <option value="Soltero">
+                    Soltero
+                  </option>
+
+                  <option value="Casado">
+                    Casado
+                  </option>
+
+                  <option value="Divorciado">
+                    Divorciado
+                  </option>
+
+                  <option value="Viudo">
+                    Viudo
+                  </option>
+
+                  <option value="Unión libre">
+                    Unión libre
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div class="campo">
+
+                <label for="genero">
+                  Género
+                </label>
+
+                <select
+                  id="genero"
+                  name="genero"
+                  [(ngModel)]="empleado.genero"
+                  [disabled]="guardando || cargando">
+
+                  <option value="">
+                    Selecciona...
+                  </option>
+
+                  <option value="Masculino">
+                    Masculino
+                  </option>
+
+                  <option value="Femenino">
+                    Femenino
+                  </option>
+
+                  <option value="Otro">
+                    Otro
+                  </option>
+
+                  <option value="Prefiero no decirlo">
+                    Prefiero no decirlo
+                  </option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- =========================
+               DATOS LABORALES
+          ========================== -->
+          <div class="card">
+
+            <h3>Datos Laborales</h3>
+
+            <div class="grid3">
+
+              <div class="campo">
+
+                <label for="idDepartamento">
+                  Departamento
+                  <b>*</b>
+                </label>
+
+                <select
+                  id="idDepartamento"
+                  name="idDepartamento"
+                  [(ngModel)]="empleado.idDepartamento"
+                  [disabled]="guardando || cargando">
+
+                  <option value="">
+                    Selecciona departamento
+                  </option>
+
+                  <option value="1">
+                    Producción
+                  </option>
+
+                  <option value="2">
+                    Calidad
+                  </option>
+
+                  <option value="3">
+                    Almacén
+                  </option>
+
+                  <option value="4">
+                    Recursos Humanos
+                  </option>
+
+                  <option value="5">
+                    Administración
+                  </option>
+
+                  <option value="6">
+                    Ventas
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div class="campo">
+
+                <label for="puesto">
+                  Puesto
+                  <b>*</b>
+                </label>
+
+                <input
+                  id="puesto"
+                  type="text"
+                  name="puesto"
+                  placeholder="Ingresa el puesto"
+                  [(ngModel)]="empleado.puesto"
+                  [disabled]="guardando || cargando">
+
+              </div>
+
+              <div class="campo">
+
+                <label for="numeroEmpleado">
+                  Número de Empleado
+                  <b>*</b>
+                </label>
+
+                <input
+                  id="numeroEmpleado"
+                  type="text"
+                  name="numeroEmpleado"
+                  placeholder="Ej. EMP-0001"
+                  [(ngModel)]="empleado.numeroEmpleado"
+                  [disabled]="guardando || cargando">
+
+              </div>
+
+            </div>
+
+            <div class="grid3">
+
+              <div class="campo">
+
+                <label for="fechaIngreso">
+                  Fecha de Ingreso
+                  <b>*</b>
+                </label>
+
+                <input
+                  id="fechaIngreso"
+                  type="date"
+                  name="fechaIngreso"
+                  [(ngModel)]="empleado.fechaIngreso"
+                  [disabled]="guardando || cargando">
+
+              </div>
+
+              <div class="campo">
+
+                <label for="turno">
+                  Turno
+                  <b>*</b>
+                </label>
+
+                <select
+                  id="turno"
+                  name="turno"
+                  [(ngModel)]="empleado.turno"
+                  [disabled]="guardando || cargando">
+
+                  <option value="">
+                    Selecciona turno
+                  </option>
+
+                  <option value="1er Turno">
+                    1er Turno
+                  </option>
+
+                  <option value="2do Turno">
+                    2do Turno
+                  </option>
+
+                  <option value="3er Turno">
+                    3er Turno
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div class="campo">
+
+                <label for="estado">
+                  Estado
+                </label>
+
+                <select
+                  id="estado"
+                  name="estado"
+                  [(ngModel)]="empleado.estado"
+                  [disabled]="guardando || cargando">
+
+                  <option value="Activo">
+                    Activo
+                  </option>
+
+                  <option value="Inactivo">
+                    Inactivo
+                  </option>
+
+                  <option value="Vacaciones">
+                    Vacaciones
+                  </option>
+
+                  <option value="Incapacidad">
+                    Incapacidad
+                  </option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+            <div class="grid3">
+
+              <div class="campo">
+
+                <label for="tipoContrato">
+                  Tipo de Contrato
+                  <b>*</b>
+                </label>
+
+                <select
+                  id="tipoContrato"
+                  name="tipoContrato"
+                  [(ngModel)]="empleado.tipoContrato"
+                  [disabled]="guardando || cargando">
+
+                  <option value="">
+                    Selecciona contrato
+                  </option>
+
+                  <option value="Temporal">
+                    Temporal
+                  </option>
+
+                  <option value="Indeterminado">
+                    Indeterminado
+                  </option>
+
+                  <option value="Tiempo completo">
+                    Tiempo completo
+                  </option>
+
+                  <option value="Medio tiempo">
+                    Medio tiempo
+                  </option>
+
+                  <option value="Por obra o proyecto">
+                    Por obra o proyecto
+                  </option>
+
+                  <option value="Eventual">
+                    Eventual
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div class="campo">
+
+                <label for="salario">
+                  Sueldo Semanal
+                  <b>*</b>
+                </label>
+
+                <input
+                  id="salario"
+                  type="number"
+                  name="salario"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  [(ngModel)]="empleado.salario"
+                  [disabled]="guardando || cargando">
+
+              </div>
+
+              <div class="campo">
+
+                <label for="horasLaboralesDia">
+                  Horas Laborales por Día
+                </label>
+
+                <input
+                  id="horasLaboralesDia"
+                  type="number"
+                  name="horasLaboralesDia"
+                  min="1"
+                  max="24"
+                  [(ngModel)]="empleado.horasLaboralesDia"
+                  [disabled]="guardando || cargando">
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- =========================
+               INFORMACIÓN BANCARIA
+          ========================== -->
+          <div class="card">
+
+            <h3>Información Bancaria</h3>
+
+            <div class="grid4">
+
+              <div class="campo">
+
+                <label for="banco">
+                  Banco
+                </label>
+
+                <select
+                  id="banco"
+                  name="banco"
+                  [(ngModel)]="empleado.banco"
+                  [disabled]="guardando || cargando">
+
+                  <option value="BANORTE">
+                    BANORTE
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div class="campo">
+
+                <label for="numeroTarjeta">
+                  Número de Tarjeta
+                </label>
+
+                <input
+                  id="numeroTarjeta"
+                  type="text"
+                  name="numeroTarjeta"
+                  maxlength="16"
+                  inputmode="numeric"
+                  placeholder="16 números"
+                  [(ngModel)]="empleado.numeroTarjeta"
+                  [disabled]="guardando || cargando">
+
+              </div>
+
+              <div class="campo">
+
+                <label for="clabeInterbancaria">
+                  CLABE Interbancaria
+                </label>
+
+                <input
+                  id="clabeInterbancaria"
+                  type="text"
+                  name="clabeInterbancaria"
+                  maxlength="18"
+                  inputmode="numeric"
+                  placeholder="18 números"
+                  [(ngModel)]="empleado.clabeInterbancaria"
+                  [disabled]="guardando || cargando">
+
+              </div>
+
+              <div class="campo">
+
+                <label for="titularCuenta">
+                  Titular de la Cuenta
+                </label>
+
+                <input
+                  id="titularCuenta"
+                  type="text"
+                  name="titularCuenta"
+                  placeholder="Nombre completo del titular"
+                  [(ngModel)]="empleado.titularCuenta"
+                  [disabled]="guardando || cargando">
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- =========================
+             PANEL INFORMATIVO
+        ========================== -->
+        <aside class="info-panel">
+
+          <div class="info-card blue-info">
+
+            <h4>
+              ⓘ Información Importante
+            </h4>
+
+            <ul>
+
+              <li>
+              
+              </li>
+
+              <li>
+                Ingresa correctamente el número de tarjeta bancaria.
+              </li>
+
+              <li>
+                El pago se realiza únicamente por BANORTE.
+              </li>
+
+              <li>
+                La información será usada para nómina y pagos.
+              </li>
+
+            </ul>
+
+          </div>
+
+          <div class="info-card yellow-info">
+
+            <h4>
+              Turnos Disponibles
+            </h4>
+
+            <p>
+              <strong>1er Turno:</strong>
+              7:00 AM - 3:00 PM
+            </p>
+
+            <small>
+              Extra opcional: 3:00 PM - 11:00 PM
+            </small>
+
+            <p>
+              <strong>2do Turno:</strong>
+              3:00 PM - 11:00 PM
+            </p>
+
+            <small>
+              Extra opcional: 11:00 PM - 7:00 AM
+            </small>
+
+            <p>
+              <strong>3er Turno:</strong>
+              11:00 PM - 7:00 AM
+            </p>
+
+            <small>
+              Extra opcional: 7:00 AM - 3:00 PM
+            </small>
+
+          </div>
+
+          <div class="info-card green-info">
+
+            <h4>
+              Horas Extras
+            </h4>
+
+            <p>
+              En el módulo de Horas Extras podrás seleccionar:
+            </p>
+
+            <ul>
+              <li>
+                <strong>Requerido PL</strong>
+              </li>
+
+              <li>
+                <strong>V-Extra</strong>
+              </li>
+            </ul>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+      <!-- =========================
+           BOTONES
+      ========================== -->
+      <div class="buttons">
+
+        <button
+          type="button"
+          class="cancel"
+          (click)="cancelar()"
+          [disabled]="guardando || cargando">
+          Cancelar
+        </button>
+
+        <!-- ELIMINAR: SOLO EN EDICIÓN -->
+        <button
+          type="button"
+          class="delete"
+          *ngIf="modoEdicion"
+          (click)="eliminarEmpleado()"
+          [disabled]="guardando || cargando">
+          🗑 Eliminar
+        </button>
+
+        <!-- EDITAR: SOLO EN EDICIÓN -->
+        <button
+          type="button"
+          class="edit"
+          *ngIf="modoEdicion"
+          (click)="editarEmpleado()"
+          [disabled]="guardando || cargando">
+
+          {{
+            guardando
+              ? 'Guardando...'
+              : '✏ Guardar cambios'
+          }}
+
+        </button>
+
+        <!-- GUARDAR: SOLO CUANDO ES NUEVO -->
+        <button
+          type="button"
+          class="save"
+          *ngIf="!modoEdicion"
+          (click)="guardarEmpleado()"
+          [disabled]="guardando || cargando">
+
+          {{
+            guardando
+              ? 'Guardando...'
+              : '👥 Guardar Empleado'
+          }}
+
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>

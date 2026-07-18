@@ -1,0 +1,614 @@
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h1>KASQ</h1>
+      <span>FOOTWEAR</span>
+    </div>
+
+    <nav>
+
+      <a routerLink="/dashboard">
+        🏠 Inicio
+      </a>
+
+      <a routerLink="/empleados">
+        👥 Empleados
+      </a>
+
+      <a routerLink="/registro-laboral">
+        🕒 Horarios
+      </a>
+
+      <a routerLink="/registrar-hora-extra">
+        ⏱ Horas Extras
+      </a>
+
+      <a
+        routerLink="/nomina"
+        routerLinkActive="active">
+        💳 Nómina
+      </a>
+
+      <a routerLink="/pagos">
+        💵 Pagos
+      </a>
+
+      <a routerLink="/registrar-empleado">
+        👤 Registrar Empleado
+      </a>
+
+      
+
+    </nav>
+
+    <div
+      class="logout"
+      routerLink="/login"
+      role="button"
+      tabindex="0">
+
+      ↪ Cerrar sesión
+
+    </div>
+
+  </aside>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+
+      
+
+      <div class="user-area">
+
+        <div class="bell">
+
+          🔔
+
+          <span></span>
+
+        </div>
+
+        <div class="profile">
+
+          <div class="avatar">
+            👤
+          </div>
+
+          <div>
+
+            <strong>RH Admin</strong>
+
+            <p>Administrador</p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <!-- CONTENIDO -->
+    <section class="content">
+
+      <!-- TÍTULO -->
+      <div class="page-title">
+
+        <div>
+
+          <h2>Nóminas</h2>
+
+          <p>
+            Consulta y gestión de nóminas de los empleados
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-primary"
+          [disabled]="generando || cargando"
+          (click)="generarNomina()">
+
+          {{ generando ? 'Generando...' : '➕ Generar nómina' }}
+
+        </button>
+
+      </div>
+
+      <!-- FILTROS -->
+      <div class="filters">
+
+        <div>
+
+          <label for="mes">
+            Mes
+          </label>
+
+          <input
+            id="mes"
+            type="month"
+            [(ngModel)]="mesSeleccionado">
+
+        </div>
+
+        <div>
+
+          <label for="departamento">
+            Departamento
+          </label>
+
+          <select
+            id="departamento"
+            [(ngModel)]="departamentoSeleccionado">
+
+            <option value="">
+              Todos
+            </option>
+
+            <option value="Producción">
+              Producción
+            </option>
+
+            <option value="Calidad">
+              Calidad
+            </option>
+
+            <option value="Almacén">
+              Almacén
+            </option>
+
+            <option value="Mantenimiento">
+              Mantenimiento
+            </option>
+
+            <option value="Recursos Humanos">
+              Recursos Humanos
+            </option>
+
+          </select>
+
+        </div>
+
+        <div>
+
+          <label for="estado">
+            Estado
+          </label>
+
+          <select
+            id="estado"
+            [(ngModel)]="estadoSeleccionado">
+
+            <option value="">
+              Todos
+            </option>
+
+            <option value="Activo">
+              Activo
+            </option>
+
+            <option value="Inactivo">
+              Inactivo
+            </option>
+
+            <option value="Pendiente">
+              Pendiente
+            </option>
+
+            <option value="Pagado">
+              Pagado
+            </option>
+
+          </select>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn-filter"
+          (click)="filtrarNominas()">
+
+          🔍 Filtrar
+
+        </button>
+
+        <button
+          type="button"
+          class="btn-clear"
+          (click)="limpiarFiltros()">
+
+          Limpiar
+
+        </button>
+
+      </div>
+
+      <!-- TARJETAS -->
+      <div class="cards">
+
+        <div class="card">
+
+          <div class="icon brown">
+            💼
+          </div>
+
+          <div>
+
+            <p>
+              Total de nóminas
+            </p>
+
+            <h3>
+              {{ totalNominas() }}
+            </h3>
+
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="icon green">
+            💲
+          </div>
+
+          <div>
+
+            <p>
+              Monto total
+            </p>
+
+            <h3>
+
+              {{
+                montoTotal()
+                | currency:'MXN':'symbol':'1.2-2'
+              }}
+
+            </h3>
+
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="icon blue">
+            👥
+          </div>
+
+          <div>
+
+            <p>
+              Empleados
+            </p>
+
+            <h3>
+              {{ totalEmpleados() }}
+            </h3>
+
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="icon orange">
+            📅
+          </div>
+
+          <div>
+
+            <p>
+              Periodo
+            </p>
+
+            <h3>
+              {{ mesSeleccionado || 'Actual' }}
+            </h3>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- MENSAJE DE CARGA -->
+      <div
+        class="loading-message"
+        *ngIf="cargando">
+
+        Cargando empleados y horas extras...
+
+      </div>
+
+      <!-- MENSAJE SIN HORAS EXTRAS -->
+      <div
+        class="warning-message"
+        *ngIf="
+          !cargando &&
+          empleados.length > 0 &&
+          horasExtras.length === 0
+        ">
+
+        No se encontraron registros de horas extras.
+
+      </div>
+
+      <!-- TABLA -->
+      <div
+        class="table-card"
+        *ngIf="!cargando">
+
+        <div class="table-responsive">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Empleado
+                </th>
+
+                <th>
+                  No. empleado
+                </th>
+
+                <th>
+                  Departamento
+                </th>
+
+                <th>
+                  Puesto
+                </th>
+
+                <th>
+                  Sueldo base
+                </th>
+
+                <th>
+                  Horas extras
+                </th>
+
+                <th>
+                  Deducciones
+                </th>
+
+                <th>
+                  Neto a pagar
+                </th>
+
+                <th>
+                  Fecha
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let nomina of nominasFiltradas
+                ">
+
+                <!-- EMPLEADO -->
+                <td>
+
+                  <div class="empleado">
+
+                    <img
+                      [src]="fotoEmpleado(nomina.foto)"
+                      width="45"
+                      height="45"
+                      alt="Foto del empleado"
+                      onerror="
+                        this.src='https://i.pravatar.cc/50'
+                      ">
+
+                    <div class="empleado-info">
+
+                      <span class="empleado-nombre">
+
+                        {{ nomina.nombre || 'Sin nombre' }}
+
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </td>
+
+                <!-- NÚMERO DE EMPLEADO -->
+                <td>
+
+                  {{
+                    nomina.numeroEmpleado ||
+                    'Sin número'
+                  }}
+
+                </td>
+
+                <!-- DEPARTAMENTO -->
+                <td>
+
+                  {{
+                    nomina.departamento ||
+                    'Sin departamento'
+                  }}
+
+                </td>
+
+                <!-- PUESTO -->
+                <td>
+
+                  {{
+                    nomina.puesto ||
+                    'Sin puesto'
+                  }}
+
+                </td>
+
+                <!-- SUELDO BASE -->
+                <td>
+
+                  {{
+                    nomina.sueldoBase
+                      | currency:'MXN':'symbol':'1.2-2'
+                  }}
+
+                </td>
+
+                <!-- HORAS EXTRAS -->
+                <td>
+
+                  <div class="hora-extra-cell">
+
+                    <strong
+                      [class.tiene-horas-extra]="
+                        nomina.horasExtras > 0
+                      "
+                      [class.sin-horas-extra]="
+                        nomina.horasExtras <= 0
+                      ">
+
+                      {{
+                        nomina.horasExtras
+                          | currency:'MXN':'symbol':'1.2-2'
+                      }}
+
+                    </strong>
+
+                    <small
+                      class="registros-extra"
+                      *ngIf="
+                        nomina.cantidadRegistrosHorasExtras > 0
+                      ">
+
+                      {{
+                        nomina.cantidadRegistrosHorasExtras
+                      }}
+
+                      registro(s)
+
+                    </small>
+
+                    <small
+                      class="sin-registros-extra"
+                      *ngIf="
+                        !nomina.cantidadRegistrosHorasExtras
+                      ">
+
+                      Sin registros
+
+                    </small>
+
+                  </div>
+
+                </td>
+
+                <!-- DEDUCCIONES -->
+                <td>
+
+                  {{
+                    nomina.deducciones
+                      | currency:'MXN':'symbol':'1.2-2'
+                  }}
+
+                </td>
+
+                <!-- NETO -->
+                <td>
+
+                  <strong class="neto">
+
+                    {{
+                      nomina.netoPagar
+                        | currency:'MXN':'symbol':'1.2-2'
+                    }}
+
+                  </strong>
+
+                </td>
+
+                <!-- FECHA -->
+                <td>
+
+                  {{
+                    formatearFecha(
+                      nomina.fechaPago
+                    )
+                  }}
+
+                </td>
+
+                <!-- ESTADO -->
+                <td>
+
+                  <span
+                    class="badge"
+                    [class.badge-activo]="
+                      nomina.estado === 'Activo'
+                    "
+                    [class.badge-inactivo]="
+                      nomina.estado === 'Inactivo'
+                    "
+                    [class.badge-pendiente]="
+                      nomina.estado === 'Pendiente'
+                    "
+                    [class.badge-pagado]="
+                      nomina.estado === 'Pagado'
+                    ">
+
+                    {{ nomina.estado }}
+
+                  </span>
+
+                </td>
+
+              </tr>
+
+              <!-- SIN REGISTROS -->
+              <tr
+                *ngIf="
+                  nominasFiltradas.length === 0
+                ">
+
+                <td
+                  colspan="10"
+                  class="empty-table">
+
+                  No hay nóminas para mostrar.
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>

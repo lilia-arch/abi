@@ -1,0 +1,143 @@
+.login-container {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background: #f5efe8;
+
+}
+
+
+.login-card {
+
+    width: 380px;
+
+    padding: 35px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    box-shadow: 0 8px 25px rgba(0,0,0,.15);
+
+    text-align: center;
+
+}
+
+
+h1 {
+
+    color: #6b3e1e;
+
+    font-size: 32px;
+
+}
+
+
+h2 {
+
+    color: #8b5a2b;
+
+}
+
+
+.subtitulo {
+
+    color: #666;
+
+    font-size: 14px;
+
+}
+
+
+
+.campo {
+
+    text-align: left;
+
+    margin-top: 18px;
+
+}
+
+
+label {
+
+    font-weight: bold;
+
+    color: #5a351c;
+
+}
+
+
+input {
+
+    width: 100%;
+
+    padding: 12px;
+
+    margin-top: 6px;
+
+    border: 1px solid #c8a27a;
+
+    border-radius: 8px;
+
+    box-sizing: border-box;
+
+}
+
+
+
+button {
+
+    width: 100%;
+
+    padding: 12px;
+
+    margin-top: 20px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+}
+
+
+
+.btn-login {
+
+    background: #6b3e1e;
+
+    color: white;
+
+    border: none;
+
+}
+
+
+
+.btn-crear {
+
+    background: white;
+
+    color: #6b3e1e;
+
+    border: 1px solid #6b3e1e;
+
+}
+
+
+
+.mensaje {
+
+    margin-top: 15px;
+
+    color: #b00020;
+
+}

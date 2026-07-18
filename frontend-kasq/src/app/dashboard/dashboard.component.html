@@ -1,0 +1,762 @@
+<div class="dashboard-layout">
+
+  <aside class="sidebar">
+
+    <div class="logo">
+      <h1>KASQ</h1>
+      <span>FOOTWEAR</span>
+    </div>
+
+    <nav>
+
+      <a
+        routerLink="/dashboard"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+
+        🏠 Inicio
+
+      </a>
+
+      <a
+        routerLink="/empleados"
+        routerLinkActive="active">
+
+        👥 Empleados
+
+      </a>
+
+      <a
+        routerLink="/horarios"
+        routerLinkActive="active">
+
+        🕒 Horarios
+
+      </a>
+
+      <a
+        routerLink="/registrar-hora-extra"
+        routerLinkActive="active">
+
+        ⏱ Horas Extras
+
+      </a>
+
+      <a
+        routerLink="/nomina"
+        routerLinkActive="active">
+
+        💳 Nómina
+
+      </a>
+
+      <a
+        routerLink="/pagos"
+        routerLinkActive="active">
+
+        💵 Pagos
+
+      </a>
+
+      <a
+        routerLink="/registrar-empleado"
+        routerLinkActive="active">
+
+        👤 Registrar Empleado
+
+      </a>
+
+    </nav>
+
+    <div
+      class="logout"
+      routerLink="/login"
+      role="button"
+      tabindex="0">
+
+      ↪ Cerrar sesión
+
+    </div>
+
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+
+      
+      <div class="user-area">
+
+        <div class="bell">
+
+          🔔
+          <span></span>
+
+        </div>
+
+        <div class="profile">
+
+          <div class="avatar">
+            👤
+          </div>
+
+          <div>
+
+            <strong>
+              RH Admin
+            </strong>
+
+            <p>
+              Administrador
+            </p>
+
+          </div>
+
+          <span>
+            ⌄
+          </span>
+
+        </div>
+
+      </div>
+
+    </header>
+
+    <section class="content">
+
+      <h2>
+        Dashboard
+      </h2>
+
+      <p class="subtitle">
+        Bienvenido al sistema de Recursos Humanos - KASQ Footwear
+      </p>
+
+      <!-- TARJETAS -->
+      <div class="cards">
+
+        <!-- EMPLEADOS -->
+        <div class="card">
+
+          <div class="icon blue">
+            👥
+          </div>
+
+          <div>
+
+            <p>
+              Empleados Activos
+            </p>
+
+            <h3>
+              {{ totalEmpleados() }}
+            </h3>
+
+            <a routerLink="/empleados">
+              Ver empleados ›
+            </a>
+
+          </div>
+
+        </div>
+
+        <!-- HORAS EXTRAS -->
+        <div class="card">
+
+          <div class="icon green">
+            ⏱
+          </div>
+
+          <div>
+
+            <p>
+              Horas Extras Registradas
+            </p>
+
+            <h3>
+              {{ totalHorasExtras() }}
+            </h3>
+
+            <a routerLink="/registrar-hora-extra">
+              Ver horas extras ›
+            </a>
+
+          </div>
+
+        </div>
+
+        <!-- PAGOS REALIZADOS -->
+        <div class="card">
+
+          <div class="icon purple">
+            💲
+          </div>
+
+          <div>
+
+            <p>
+              Pagos Realizados
+            </p>
+
+            <h3>
+
+              {{
+                montoPagosRealizados()
+                  | currency:'MXN':'symbol':'1.2-2'
+              }}
+
+            </h3>
+
+            <span class="card-detail">
+
+              {{ totalPagosRealizados() }}
+              pago(s)
+
+            </span>
+
+            <a routerLink="/pagos">
+              Ver pagos ›
+            </a>
+
+          </div>
+
+        </div>
+
+        <!-- NÓMINA ACTUAL -->
+        <div class="card">
+
+          <div class="icon orange">
+            📅
+          </div>
+
+          <div>
+
+            <p>
+              Nómina Actual
+            </p>
+
+            <h3>
+
+              {{
+                totalNominaEstimada()
+                  | currency:'MXN':'symbol':'1.2-2'
+              }}
+
+            </h3>
+
+            <a routerLink="/nomina">
+              Ver nómina ›
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- PRIMERA FILA -->
+      <div class="grid">
+
+        <!-- EMPLEADOS RECIENTES -->
+        <div class="panel">
+
+          <div class="panel-header">
+
+            <h3>
+              Empleados Recientes
+            </h3>
+
+            <button
+              type="button"
+              routerLink="/empleados">
+
+              Ver todos
+
+            </button>
+
+          </div>
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Foto
+                </th>
+
+                <th>
+                  Nombre
+                </th>
+
+                <th>
+                  Departamento
+                </th>
+
+                <th>
+                  Turno
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let empleado of empleados
+                    | slice:0:4
+                ">
+
+                <td>
+
+                  <img
+                    [src]="
+                      fotoEmpleado(
+                        empleado.Foto ||
+                        empleado.foto
+                      )
+                    "
+                    width="40"
+                    height="40"
+                    alt="Foto del empleado"
+                    style="
+                      border-radius: 50%;
+                      object-fit: cover;
+                    ">
+
+                </td>
+
+                <td>
+
+                  {{
+                    empleado.Nombre ||
+                    empleado.nombre
+                  }}
+
+                  {{
+                    empleado.ApellidoPaterno ||
+                    empleado.apellidoPaterno
+                  }}
+
+                  {{
+                    empleado.ApellidoMaterno ||
+                    empleado.apellidoMaterno
+                  }}
+
+                </td>
+
+                <td>
+
+                  {{
+                    obtenerDepartamento(
+                      empleado.IdDepartamento ||
+                      empleado.idDepartamento
+                    )
+                  }}
+
+                </td>
+
+                <td>
+
+                  {{
+                    empleado.Turno ||
+                    empleado.turno ||
+                    'Sin turno'
+                  }}
+
+                </td>
+
+                <td>
+
+                  <span class="status">
+
+                    {{
+                      empleado.Estado ||
+                      empleado.estado ||
+                      'Activo'
+                    }}
+
+                  </span>
+
+                </td>
+
+              </tr>
+
+              <tr *ngIf="empleados.length === 0">
+
+                <td
+                  colspan="5"
+                  class="empty-message">
+
+                  No hay empleados registrados.
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <!-- HORAS EXTRAS -->
+        <div class="panel">
+
+          <div class="panel-header">
+
+            <h3>
+              Horas Extras Registradas
+            </h3>
+
+            <button
+              type="button"
+              (click)="obtenerHorasExtras()">
+
+              Actualizar
+
+            </button>
+
+          </div>
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Empleado
+                </th>
+
+                <th>
+                  Horas
+                </th>
+
+                <th>
+                  Tipo
+                </th>
+
+                <th>
+                  Fecha
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let horaExtra of horasExtras
+                    | slice:0:5
+                ">
+
+                <td>
+
+                  {{
+                    horaExtra.NombreEmpleado ||
+                    horaExtra.nombreEmpleado ||
+                    horaExtra.NumeroEmpleado ||
+                    horaExtra.numeroEmpleado ||
+                    'Sin empleado'
+                  }}
+
+                </td>
+
+                <td>
+
+                  {{
+                    horaExtra.HorasTrabajo ||
+                    horaExtra.horasTrabajo ||
+                    horaExtra.HorasExtras ||
+                    horaExtra.horasExtras ||
+                    0
+                  }}
+
+                </td>
+
+                <td>
+
+                  <span
+                    class="tag"
+                    [class.yellow]="
+                      (
+                        horaExtra.TipoHoraExtra ||
+                        horaExtra.tipoHoraExtra
+                      ) === 'Requerido PL'
+                    "
+                    [class.blue-tag]="
+                      (
+                        horaExtra.TipoHoraExtra ||
+                        horaExtra.tipoHoraExtra
+                      ) === 'V-Extra'
+                    ">
+
+                    {{
+                      horaExtra.TipoHoraExtra ||
+                      horaExtra.tipoHoraExtra ||
+                      'Sin tipo'
+                    }}
+
+                  </span>
+
+                </td>
+
+                <td>
+
+                  {{
+                    (
+                      horaExtra.Fecha ||
+                      horaExtra.fecha
+                    )
+                      | date:'dd/MM/yyyy'
+                  }}
+
+                </td>
+
+              </tr>
+
+              <tr *ngIf="horasExtras.length === 0">
+
+                <td
+                  colspan="4"
+                  class="empty-message">
+
+                  No hay horas extras registradas.
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+      <!-- SEGUNDA FILA -->
+      <div class="grid">
+
+        <!-- RESUMEN DE NÓMINA -->
+        <div class="panel">
+
+          <div class="panel-header">
+
+            <h3>
+              Resumen de Nómina
+            </h3>
+
+            <button
+              type="button"
+              routerLink="/nomina">
+
+              Ver nómina
+
+            </button>
+
+          </div>
+
+          <div class="pay-summary">
+
+            <div>
+
+              <p>
+                Sueldos Base
+              </p>
+
+              <h3>
+
+                {{
+                  totalSueldosBase()
+                    | currency:'MXN':'symbol':'1.2-2'
+                }}
+
+              </h3>
+
+              <span>
+                Total de empleados
+              </span>
+
+            </div>
+
+            <div>
+
+              <p>
+                Horas Extras
+              </p>
+
+              <h3>
+
+                {{
+                  montoTotalHorasExtras()
+                    | currency:'MXN':'symbol':'1.2-2'
+                }}
+
+              </h3>
+
+              <span>
+
+                {{ totalHorasExtras() }}
+                hora(s)
+
+              </span>
+
+            </div>
+
+            <div>
+
+              <p>
+                Total a Pagar
+              </p>
+
+              <h3>
+
+                {{
+                  totalNominaEstimada()
+                    | currency:'MXN':'symbol':'1.2-2'
+                }}
+
+              </h3>
+
+              <span>
+                Total actual
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ÚLTIMOS PAGOS -->
+        <div class="panel">
+
+          <div class="panel-header">
+
+            <h3>
+              Últimos Pagos
+            </h3>
+
+            <button
+              type="button"
+              routerLink="/pagos">
+
+              Ver todos
+
+            </button>
+
+          </div>
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Empleado
+                </th>
+
+                <th>
+                  Banco
+                </th>
+
+                <th>
+                  Tarjeta
+                </th>
+
+                <th>
+                  Monto
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              <tr
+                *ngFor="
+                  let pago of ultimosPagos()
+                ">
+
+                <td>
+
+                  {{ obtenerNombrePago(pago) }}
+
+                </td>
+
+                <td>
+
+                  {{ obtenerBancoPago(pago) }}
+
+                </td>
+
+                <td>
+
+                  {{ obtenerTarjetaPago(pago) }}
+
+                </td>
+
+                <td>
+
+                  {{
+                    obtenerMontoPago(pago)
+                      | currency:'MXN':'symbol':'1.2-2'
+                  }}
+
+                </td>
+
+                <td>
+
+                  <span class="status">
+                    Pagado
+                  </span>
+
+                </td>
+
+              </tr>
+
+              <tr
+                *ngIf="
+                  ultimosPagos().length === 0
+                ">
+
+                <td
+                  colspan="5"
+                  class="empty-message">
+
+                  No hay pagos realizados.
+
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
